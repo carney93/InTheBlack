@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "781362841875",
+    "firebase_url": "https://intheblack-851a8.firebaseio.com",
+    "project_id": "intheblack-851a8",
+    "storage_bucket": "intheblack-851a8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781362841875:android:1013a804fa30eafc35f2e6",
+        "android_client_info": {
+          "package_name": "com.intheblack"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "781362841875-2p4susunjd70ecagat9gv2dg61pqka1b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAF6p1lCjko6zoSNwp3WIO0gkQM5k4dU7M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781362841875-2p4susunjd70ecagat9gv2dg61pqka1b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
