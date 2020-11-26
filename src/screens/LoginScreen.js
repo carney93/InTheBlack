@@ -3,43 +3,9 @@ import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Button} fro
 import { withOrientation } from 'react-navigation';
 import auth from '@react-native-firebase/auth';
 
-function LoginApp() {
-  // Set an initializing state whilst Firebase connects
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
-
-  // Handle user state changes
-  function onAuthStateChanged(user) {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  }
-
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
-  }, []);
-
-  if (initializing) return null;
-
-  if (!user) {
-    return (
-      <View>
-        <Text>Login</Text>
-      </View>
-    );
-  }
-
-  return (
-    <View>
-      <Text>Welcome {user.email}</Text>
-    </View>
-  );
-}
-
-
 const styles = StyleSheet.create({
   container: {
-    marginTop: 10,
+    marginTop: 50,
     alignItems: 'center',
   },
   appName: {
@@ -78,39 +44,31 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontFamily: "Roboto"
   },
+  signUpText: {
+    color: 'black',
+    fontSize: 15,
+    fontFamily: "Roboto"
+  },
+  signUpButton: {
+    color: 'black',
+    fontSize: 15,
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+    flexDirection:'row'
+  },
 });
 
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  createUser = () => {
-    auth()
-  .createUserWithEmailAndPassword('jane.doe@example.com', 'SuperSecretPassword!')
-  .then(() => {
-    console.log('User account created & signed in!');
-  })
-  .catch(error => {
-    if (error.code === 'auth/email-already-in-use') {
-      console.log('That email address is already in use!');
-    }
 
-    if (error.code === 'auth/invalid-email') {
-      console.log('That email address is invalid!');
-    }
-
-    console.error(error);
-  });
-  }
-
-
-  logOut = () => {
-    auth()
-    .signOut()
-    .then(() => console.log('User signed out!'));
-  }
+    const goToSignup = () => {
+      navigation.replace('Register')
+          };
+  
 
   return (
     <View style={styles.container}>
@@ -136,10 +94,12 @@ const LoginScreen = () => {
 			</Text>
       </TouchableOpacity>
 
-      <LoginApp />
-
-      <Button title ="Create User" onPress={createUser} />
-      <Button title ="Logout" onPress={logOut} />
+      <Text>
+      <Text style={styles.signUpText}>Don't have an account?</Text><Text style={styles.signUpButton}> SignUp</Text>
+      <Button title="SignUp" onPress={goToSignup}>
+      Go home
+    </Button>
+      </Text>
     </View>
 
   
