@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Button} from 'react-native';
-import { withOrientation } from 'react-navigation';
 import auth from '@react-native-firebase/auth';
+import firebase from '../../config';
+
+
 
 function LoginApp() {
   // Set an initializing state whilst Firebase connects
@@ -81,16 +83,35 @@ const styles = StyleSheet.create({
 });
 
 
-const RegisterScreen = () => {
+const RegisterScreen = ({ navigation }) => {
+
+
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+
+  const goToLogin = () => {
+    navigation.replace('Login')
+        }
+
+
+
+
   createUser = () => {
     auth()
-  .createUserWithEmailAndPassword(email, password)
-  .then(() => {
-    console.log('User account created & signed in!');
+      .createUserWithEmailAndPassword(email, password)
+      .then((res) => {
+        firebase
+          .database()
+          .ref('users /')
+          .push({
+            user: {
+              email: email, //pass your email
+              uuid: auth().currentUser.uid,
+            },
+          });
+          navigation.replace('Home')
   })
   .catch(error => {
     if (error.code === 'auth/email-already-in-use') {
@@ -140,6 +161,9 @@ const RegisterScreen = () => {
 
       <Button title ="Create User" onPress={createUser} />
       <Button title ="Logout" onPress={logOut} />
+      <Button title="Login" onPress={goToLogin}>
+    </Button>
+
     </View>
 
   

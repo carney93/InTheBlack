@@ -96,8 +96,7 @@ const LoginScreen = ({ navigation }) => {
 
       <Text>
       <Text style={styles.signUpText}>Don't have an account?</Text><Text style={styles.signUpButton}> SignUp</Text>
-      <Button title="SignUp" onPress={goToSignup}>
-      Go home
+      <Button title="Sign Up" onPress={goToSignup}>
     </Button>
       </Text>
     </View>

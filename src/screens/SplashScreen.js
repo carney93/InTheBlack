@@ -29,7 +29,7 @@ const SplashScreen = props => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../Image/aboutreact.png')}
+        //source={require('../Image/aboutreact.png')}
         style={{ width: '90%', resizeMode: 'contain', margin: 30 }}
       />
       <ActivityIndicator
