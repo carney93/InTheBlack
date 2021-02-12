@@ -68,44 +68,20 @@ const HomeScreen = ({ navigation }) => {
     email: '',
   });
 
-  const [userIncomeInfo, setUserIncomeInfo] = useState({
-    name: '',
-    amount: '',
-  });
-
-  const [income, setIncome] = useState('');
-  const [incomeName, setIncomeName] = useState('');
-
-
+  const goToIncome = () => {
+    navigation.replace('Income')
+        }
 
   let id = auth().currentUser.uid;
 
-  addIncome = () => {
-    firebase
-      .database()
-      .ref('incomes /')
-      .push({
-        income: {
-          name: incomeName,
-          amount: income, //pass your income
-          uuid: auth().currentUser.uid,
-        },
-      });
-  }
 
-  pullIncome = () => {
-    firebase.database().ref('incomes /').on('value', (dataSnapshot) => {
-      dataSnapshot.forEach((child) => {
-        if (id === child.val().income.uuid) {
-          setUserIncomeInfo({ //set state here
-            name: child.val().income.name,
-            amount: child.val().income.amount,
-          });
-        }
-      });
-    });
+  logOut = () => {
+    auth()
+    .signOut()
+    .then((res) => {
+      navigation.replace('Login')
+    })
   }
-
 
   useEffect(() => {
     firebase.database().ref('users /').on('value', (dataSnapshot) => {
@@ -126,19 +102,10 @@ const HomeScreen = ({ navigation }) => {
     <View style={styles.container}>
 
       <Text style={styles.signUpButton}> hello {userDetail.email}</Text>
-      <Text style={styles.signUpButton}> your income {userIncomeInfo.name} is {userIncomeInfo.amount}</Text>
-      <Button title="Pulled Income" onPress={pullIncome} />
 
-      <TextInput placeholder="Enter Income"
-        style={styles.emailInput}
-        onChangeText={text => setIncome(text)}
-      />
-      <TextInput placeholder="Enter Income name"
-        style={styles.emailInput}
-        onChangeText={text => setIncomeName(text)}
-      />
+      <Button title="Go to Incomes" onPress={goToIncome} />
 
-      <Button title="Add Income" onPress={addIncome} />
+      <Button title ="Logout" onPress={logOut} />
 
     </View>
 

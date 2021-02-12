@@ -4,41 +4,6 @@ import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
 
 
-
-function LoginApp() {
-  // Set an initializing state whilst Firebase connects
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
-
-  // Handle user state changes
-  function onAuthStateChanged(user) {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  }
-
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
-  }, []);
-
-  if (initializing) return null;
-
-  if (!user) {
-    return (
-      <View>
-        <Text>Login</Text>
-      </View>
-    );
-  }
-
-  return (
-    <View>
-      <Text>Welcome {user.email}</Text>
-    </View>
-  );
-}
-
-
 const styles = StyleSheet.create({
   container: {
     marginTop: 10,
@@ -92,7 +57,7 @@ const RegisterScreen = ({ navigation }) => {
 
 
   const goToLogin = () => {
-    navigation.replace('Login')
+    navigation.replace('Home')
         }
 
 
@@ -126,13 +91,6 @@ const RegisterScreen = ({ navigation }) => {
   });
   }
 
-
-  logOut = () => {
-    auth()
-    .signOut()
-    .then(() => console.log('User signed out!'));
-  }
-
   return (
     <View style={styles.container}>
       <Image style={{ width: 120, height: 120 }} source={require('../../assets/logo.png')} />
@@ -157,10 +115,7 @@ const RegisterScreen = ({ navigation }) => {
 			</Text>
       </TouchableOpacity>
 
-      <LoginApp />
-
       <Button title ="Create User" onPress={createUser} />
-      <Button title ="Logout" onPress={logOut} />
       <Button title="Login" onPress={goToLogin}>
     </Button>
 
