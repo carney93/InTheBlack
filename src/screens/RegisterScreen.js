@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Button} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Button } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
 
@@ -58,9 +58,18 @@ const RegisterScreen = ({ navigation }) => {
 
   const goToLogin = () => {
     navigation.replace('Home')
-        }
+  }
 
 
+  logOut = () => {
+    auth()
+      .signOut()
+      .then((res) => {
+        navigation.replace('Login')
+      })
+  }
+
+  <Button title="Logout" onPress={logOut} />
 
 
   createUser = () => {
@@ -76,19 +85,19 @@ const RegisterScreen = ({ navigation }) => {
               uuid: auth().currentUser.uid,
             },
           });
-          navigation.replace('Home')
-  })
-  .catch(error => {
-    if (error.code === 'auth/email-already-in-use') {
-      console.log('That email address is already in use!');
-    }
+        navigation.replace('Onboard')
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          console.log('That email address is already in use!');
+        }
 
-    if (error.code === 'auth/invalid-email') {
-      console.log('That email address is invalid!');
-    }
+        if (error.code === 'auth/invalid-email') {
+          console.log('That email address is invalid!');
+        }
 
-    console.error(error);
-  });
+        console.error(error);
+      });
   }
 
   return (
@@ -108,20 +117,22 @@ const RegisterScreen = ({ navigation }) => {
       />
 
 
-     <TouchableOpacity
+      <TouchableOpacity
         style={styles.loginButton}
       >
-       <Text style={styles.loginButtonTxt}>Register
+        <Text style={styles.loginButtonTxt}>Register
 			</Text>
       </TouchableOpacity>
 
-      <Button title ="Create User" onPress={createUser} />
+      <Button title="Create User" onPress={createUser} />
       <Button title="Login" onPress={goToLogin}>
-    </Button>
+      </Button>
+
+      <Button title="Logout" onPress={logOut} />
 
     </View>
 
-  
+
   );
 }
 

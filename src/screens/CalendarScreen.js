@@ -60,59 +60,15 @@ const styles = StyleSheet.create({
 });
 
 
-const HomeScreen = ({ navigation }) => {
+const CalendarScreen = ({ navigation }) => {
 
-  const [userDetail, setUserDetail] = useState({
-    id: '',
-    email: '',
-  });
-
-  const goToAccounts = () => {
-    navigation.replace('Accounts')
-  }
-
-
-  const goToIncomes = () => {
-    navigation.replace('Income')
-  }
-
-
-  let id = auth().currentUser.uid;
-
-
-  logOut = () => {
-    auth()
-      .signOut()
-      .then((res) => {
-        navigation.replace('Login')
-      })
-  }
-
-  useEffect(() => {
-    firebase.database().ref('users /').on('value', (dataSnapshot) => {
-      dataSnapshot.forEach((child) => {
-        if (id === child.val().user.uuid) {
-          setUserDetail({ //set state here
-            id,
-            email: child.val().user.email,
-          });
-        }
-      });
-    });
-    console.log('email', userDetail.email)
-  }, []);
-
+  
 
   return (
     <View style={styles.container}>
 
-      <Text style={styles.signUpButton}> hello {userDetail.email}</Text>
+      <Text>hello </Text>
 
-      <Button title="Go to Accounts" onPress={goToAccounts} />
-
-      <Button title="Go to Incomes" onPress={goToIncomes} />
-
-      <Button title="Logout" onPress={logOut} />
 
 
     </View>
@@ -120,5 +76,5 @@ const HomeScreen = ({ navigation }) => {
   );
 }
 
-export default HomeScreen;
+export default CalendarScreen;
 
