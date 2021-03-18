@@ -156,7 +156,7 @@ const OnboardScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
 
-      <Text style={styles.signUpButton}> Welcome {userDetail.email} to the app. Please enter youe fianancial institutions and enter amount</Text>
+      <Text style={styles.signUpButton}> Welcome {userDetail.email} to the app. Please enter your fianancial institutions and enter amount</Text>
 
 
       <TextInput placeholder="Enter Account"

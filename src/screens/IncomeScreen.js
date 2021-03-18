@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Button, Scr
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
 import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 
@@ -65,10 +66,34 @@ const styles = StyleSheet.create({
 
 const IncomeScreen = ({ navigation }) => {
 
+
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+
+    const onChange = (event, date) => {
+        const currentDate = date;
+        setShow(Platform.OS === 'ios');
+        setPaymentDate(currentDate);
+    };
+
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
+    };
+
+    const showDatepicker = () => {
+        showMode('date');
+    };
+
+
+
+
     const [userDetail, setUserDetail] = useState({
         id: '',
         email: '',
     });
+
+    const [todaysDate, setTodaysDate] = useState(new Date());
 
     //to check if new income has been added
     const [incomeAdded, setIncomeAdded] = useState(false);
@@ -83,6 +108,9 @@ const IncomeScreen = ({ navigation }) => {
     const [incomeName, setIncomeName] = useState('');
     const [totalBalance, setTotalBalance] = useState('');
     const [selectedAccount, setSelectedAccount] = useState("");
+    const [selectedFrequency, setSelectedFrequency] = useState("");
+    let frequencies = ["Every Week", "Every 2 Weeks", "Every Month"];
+    const [paymentDate, setPaymentDate] = useState(new Date(1598051730000));
 
 
 
@@ -103,27 +131,25 @@ const IncomeScreen = ({ navigation }) => {
 
 
     useEffect(() => {
-        if(incomeAdded){
         for (i = 0; i < accountInfo.length; i++) {
-            if (accountInfo[i].targetAccount === selectedAccount) {
+            if (accountInfo[i].name === selectedAccount) {
                 firebase
                     .database()
                     .ref('financialAccounts /' + accountInfo[i].accountId)
                     .update({
                         financialAccount: {
                             name: accountInfo[i].name,
-                            amount: accountInfo[i].amount + parseFloat(incomeAmount),
+                            amount: parseFloat(accountInfo[i].amount) + parseFloat(incomeAmount),
                             uuid: auth().currentUser.uid,
                         },
                     });
             }
-
         }
-        setIncomeAdded(false)
-    }}, [incomeAdded]);
+    }, [incomeAdded]);
 
 
     addIncome = () => {
+        console.log("Payment Date: ", paymentDate)
         firebase
             .database()
             .ref('incomes /')
@@ -131,11 +157,13 @@ const IncomeScreen = ({ navigation }) => {
                 income: {
                     name: incomeName,
                     amount: incomeAmount,
-                    targetAccount: "aib",
+                    targetAccount: selectedAccount,
+                    firstDate: paymentDate.getTime(),
+                    frequency: selectedFrequency,
                     uuid: auth().currentUser.uid,
                 },
             });
-        setIncomeAdded(true);
+        incomeAdded ? setIncomeAdded(false) : setIncomeAdded(true);
     }
 
 
@@ -153,7 +181,6 @@ const IncomeScreen = ({ navigation }) => {
                 }
             });
             setAccountInfo(items);
-            console.log(accountInfo);
         });
     }, []);
 
@@ -230,16 +257,43 @@ const IncomeScreen = ({ navigation }) => {
                 onChangeText={text => setIncomeName(text)}
             />
 
+            <View>
+                <View>
+                    <Button onPress={showDatepicker} title="Select next payment date" />
+                </View>
+                {show && (
+                    <DateTimePicker
+                        testID="dateTimePicker"
+                        value={paymentDate}
+                        mode={mode}
+                        display="calendar"
+                        onChange={onChange}
+                        minimumDate={todaysDate}
+                    />
+                )}
+            </View>
+
+            <Picker
+                selectedValue={selectedFrequency}
+                placeholder='Select frequency of income'
+                style={{ height: 50, width: 150 }}
+                onValueChange={(itemValue) => setSelectedFrequency(itemValue)}
+            >
+                {frequencies.map(info => (
+                    <Picker.Item label={info} value={info} />
+                ))}
+            </Picker>
+
             <Picker
                 selectedValue={selectedAccount}
+                placeholder='Select an Account'
                 style={{ height: 50, width: 150 }}
                 onValueChange={(itemValue) => setSelectedAccount(itemValue)}
             >
                 {accountInfo.map(info => (
-                    <Picker.Item label={info.name} />
+                    <Picker.Item label={info.name} value={info.name} />
                 ))}
             </Picker>
-
 
             <Button title="Add Account" onPress={addIncome} />
 
