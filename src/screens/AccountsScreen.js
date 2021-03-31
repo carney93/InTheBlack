@@ -147,6 +147,11 @@ const AccountsScreen = ({ navigation }) => {
     });
   }, [userAccountInfo]);
 
+  const goHome = () => {
+    navigation.replace('Home')
+  }
+
+
 
 
 
@@ -183,6 +188,7 @@ const AccountsScreen = ({ navigation }) => {
 
 
       <Button title="Add Account" onPress={addAccount} />
+      <Button title="Go Home" onPress={goHome} />
 
 
 

@@ -5,7 +5,7 @@ import Accounts from '../screens/AccountsScreen';
 import Home from '../screens/HomeScreen';
 import Calendar from '../screens/CalendarScreen';
 import Income from '../screens/IncomeScreen';
-
+import DailySpending from '../screens/DailySpendingScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -18,6 +18,7 @@ export default function drawerNav({ navigation }) {
         <Drawer.Screen name="Accounts" component={Accounts} />
         <Drawer.Screen name="Incomes" component={Income} />
         <Drawer.Screen name="Calendar" component={Calendar} />
+        <Drawer.Screen name="Daily Spending" component={DailySpending} />
       </Drawer.Navigator>
     </NavigationContainer>
   );

@@ -132,7 +132,7 @@ const IncomeScreen = ({ navigation }) => {
 
     useEffect(() => {
         for (i = 0; i < accountInfo.length; i++) {
-            if (accountInfo[i].name === selectedAccount) {
+            if (accountInfo[i].accountId === selectedAccount) {
                 firebase
                     .database()
                     .ref('financialAccounts /' + accountInfo[i].accountId)
@@ -149,7 +149,7 @@ const IncomeScreen = ({ navigation }) => {
 
 
     addIncome = () => {
-        console.log("Payment Date: ", paymentDate)
+        console.log(paymentDate)
         firebase
             .database()
             .ref('incomes /')
@@ -237,6 +237,11 @@ const IncomeScreen = ({ navigation }) => {
         });
     }, []);
 
+    const goHome = () => {
+        navigation.replace('Home')
+      }
+    
+
 
 
 
@@ -283,7 +288,7 @@ const IncomeScreen = ({ navigation }) => {
                     <Picker.Item label={info} value={info} />
                 ))}
             </Picker>
-
+            
             <Picker
                 selectedValue={selectedAccount}
                 placeholder='Select an Account'
@@ -291,11 +296,12 @@ const IncomeScreen = ({ navigation }) => {
                 onValueChange={(itemValue) => setSelectedAccount(itemValue)}
             >
                 {accountInfo.map(info => (
-                    <Picker.Item label={info.name} value={info.name} />
+                    <Picker.Item label={info.name} value={info.accountId} />
                 ))}
             </Picker>
 
-            <Button title="Add Account" onPress={addIncome} />
+            <Button title="Add Income" onPress={addIncome} />
+            <Button title="Go Home" onPress={goHome} />
 
 
 

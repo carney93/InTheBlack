@@ -8,6 +8,8 @@ import DrawerScreen from '../src/screens/drawerNav'
 import CalendarScreen from '../src/screens/CalendarScreen';
 import OnboardScreen from '../src/screens/OnboardScreen';
 import IncomeScreen from '../src/screens/IncomeScreen';
+import DailySpendingScreen from '../src/screens/DailySpendingScreen';
+
 
 
 const screens = {
@@ -55,6 +57,12 @@ const screens = {
     }, 
     Income: {
         screen: IncomeScreen,
+        navigationOptions: {
+            headerShown: false
+        },
+    }, 
+    DailySpending: {
+        screen: DailySpendingScreen,
         navigationOptions: {
             headerShown: false
         },
