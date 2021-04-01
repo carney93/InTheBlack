@@ -1,6 +1,7 @@
-import React, {useState, useEffect} from 'react';
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Button} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Image } from 'react-native';
 import firebase from '../../config';
+import { Container, Text, Item, Input, Button, Content } from 'native-base';
 import auth from '@react-native-firebase/auth';
 
 
@@ -23,24 +24,18 @@ function LoginApp() {
 
   if (initializing) return null;
 
-  if (!user) {
-    return (
-      <View>
-        <Text>Login</Text>
-      </View>
-    );
-  }
+
 
   return (
     <View>
-      <Text>Welcome {user.email}</Text>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
+    paddingTop: 50,
     alignItems: 'center',
   },
   appName: {
@@ -49,47 +44,43 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontFamily: "Roboto"
   },
-  emailInput: {
+  input: {
     marginTop: 10,
     height: 40,
     width: 200,
-    borderWidth: 2,
-    borderRadius: 20,
+    borderBottomWidth: 0,
   },
-  passwordInput: {
-    marginTop: 10,
+  inputText: {
     height: 40,
     width: 200,
+    borderColor: "black",
     borderWidth: 2,
     borderRadius: 20,
   },
   loginButton: {
-    backgroundColor: 'black',
-    marginTop: 10,
+    marginTop: 20,
     height: 40,
-    width: 200,
     borderWidth: 2,
     borderRadius: 20,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    borderColor: "black"
   },
-  loginButtonTxt: {
-    color: 'white',
-    fontSize: 15,
-    fontWeight: "bold",
-    fontFamily: "Roboto"
+  registerButton: {
+    height: 40,
+    borderWidth: 2,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    borderColor: "black"
   },
   signUpText: {
     color: 'black',
     fontSize: 15,
-    fontFamily: "Roboto"
-  },
-  signUpButton: {
-    color: 'black',
-    fontSize: 15,
-    fontWeight: "bold",
     fontFamily: "Roboto",
-    flexDirection:'row'
+    marginBottom: 0
   },
 });
 
@@ -107,7 +98,7 @@ const LoginScreen = ({ navigation }) => {
 
   const login = () => {
     console.log(email)
-      auth()
+    auth()
       .signInWithEmailAndPassword(email, password)
       .then((res) => {
         navigation.replace('Home')
@@ -119,44 +110,48 @@ const LoginScreen = ({ navigation }) => {
 
 
   return (
-    <View style={styles.container}>
+    <Container style={styles.container}>
+
       <Image style={{ width: 120, height: 120 }} source={require('../../assets/logo.png')} />
       <Text h1 style={styles.appName}>In The Black</Text>
 
-      
-      <TextInput placeholder="Email"
-        style={styles.emailInput}
-        onChangeText={text => setEmail(text)}
-
-      />
-
-      <TextInput placeholder="Password"
-        style={styles.passwordInput}
-        onChangeText={text => setPassword(text)}
-      />
 
 
+      <Item style={styles.input}>
+        <Input style={styles.inputText} placeholder='Email' 
+        onChangeText={text => setEmail(text)} />
+      </Item>
 
-     <TouchableOpacity
-        style={styles.loginButton}
-      >
-       <Text style={styles.loginButtonTxt}>Login
-			</Text>
-      </TouchableOpacity>
+      <Item style={styles.input}>
+        <Input style={styles.inputText} placeholder='Password'
+        onChangeText={text => setPassword(text)} />
+      </Item>
 
-      <Button title="Login" onPress={login}></Button>
+      <Content>
 
-      <Text>
-      <Text style={styles.signUpText}>Don't have an account?</Text><Text style={styles.signUpButton}> SignUp</Text>
-      <Button title="Sign Up" onPress={goToSignup}>
-    </Button>
-      </Text>
+        <Button rounded style={styles.loginButton} onPress={login}>
+          <Text>Login</Text>
+        </Button>
+      </Content>
 
       <LoginApp />
 
-    </View>
 
-  
+      <Text style={styles.signUpText}>Don't have an account?</Text>
+      <Content>
+
+        <Button rounded style={styles.registerButton} onPress={goToSignup}>
+          <Text>Register</Text>
+        </Button>
+      </Content>
+    </Container>
+
+
+
+
+
+
+
   );
 }
 

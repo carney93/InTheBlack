@@ -1,12 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Button } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
+import { Container, Text, Item, Input, Button, Content } from 'native-base';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
 
 
+function LoginApp() {
+  // Set an initializing state whilst Firebase connects
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  if (initializing) return null;
+
+
+
+  return (
+    <View>
+
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
-    marginTop: 10,
+    paddingTop: 50,
     alignItems: 'center',
   },
   appName: {
@@ -15,35 +43,44 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontFamily: "Roboto"
   },
-  emailInput: {
+  input: {
     marginTop: 10,
     height: 40,
     width: 200,
-    borderWidth: 2,
-    borderRadius: 20,
+    borderBottomWidth: 0,
+
   },
-  passwordInput: {
-    marginTop: 10,
+  inputText: {
     height: 40,
     width: 200,
+    borderColor: "black",
     borderWidth: 2,
     borderRadius: 20,
   },
   loginButton: {
-    backgroundColor: 'black',
-    marginTop: 10,
+    marginTop: 20,
     height: 40,
-    width: 200,
     borderWidth: 2,
     borderRadius: 20,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    borderColor: "black"
   },
-  loginButtonTxt: {
-    color: 'white',
+  registerButton: {
+    height: 40,
+    borderWidth: 2,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    borderColor: "black"
+  },
+  signUpText: {
+    color: 'black',
     fontSize: 15,
-    fontWeight: "bold",
-    fontFamily: "Roboto"
+    fontFamily: "Roboto",
+    marginBottom: 0
   },
 });
 
@@ -57,7 +94,7 @@ const RegisterScreen = ({ navigation }) => {
 
 
   const goToLogin = () => {
-    navigation.replace('Home')
+    navigation.replace('Login')
   }
 
 
@@ -70,7 +107,6 @@ const RegisterScreen = ({ navigation }) => {
   }
 
   <Button title="Logout" onPress={logOut} />
-
 
   createUser = () => {
     auth()
@@ -101,36 +137,38 @@ const RegisterScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <Image style={{ width: 120, height: 120 }} source={require('../../assets/logo.png')} />
-      <Text h1 style={styles.appName}>In The Black</Text>
+    <Container style={styles.container}>
 
-      <TextInput placeholder="Email"
-        style={styles.emailInput}
-        onChangeText={text => setEmail(text)}
+    <Image style={{ width: 120, height: 120 }} source={require('../../assets/logo.png')} />
+    <Text h1 style={styles.appName}>In The Black</Text>
 
-      />
+    <Item style={styles.input}>
+        <Input 
+        onChangeText={text => setEmail(text)} style={styles.inputText} placeholder='Email' />
+      </Item>
 
-      <TextInput placeholder="Password"
-        style={styles.passwordInput}
-        onChangeText={text => setPassword(text)}
-      />
+      <Item style={styles.input}>
+        <Input onChangeText={text => setPassword(text)} style={styles.inputText} placeholder='Password' />
+      </Item>
 
 
-      <TouchableOpacity
-        style={styles.loginButton}
-      >
-        <Text style={styles.loginButtonTxt}>Register
-			</Text>
-      </TouchableOpacity>
+      <Content>
 
-      <Button title="Create User" onPress={createUser} />
-      <Button title="Login" onPress={goToLogin}>
-      </Button>
+        <Button rounded style={styles.loginButton} onPress={createUser}>
+          <Text>Register</Text>
+        </Button>
+      </Content>
 
-      <Button title="Logout" onPress={logOut} />
 
-    </View>
+      <Text style={styles.signUpText}>Already have an Account?</Text>
+      <Content>
+
+        <Button rounded style={styles.registerButton} onPress={goToLogin}>
+          <Text>Log In</Text>
+        </Button>
+      </Content>
+
+    </Container>
 
 
   );

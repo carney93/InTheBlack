@@ -34,7 +34,7 @@ const screens = {
     Accounts: {
         screen: AccountScreen,
         navigationOptions: {
-            headerShown: true
+            headerShown: false
         },
     }, 
     Drawer: {

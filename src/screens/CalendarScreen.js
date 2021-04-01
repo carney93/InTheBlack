@@ -1,80 +1,66 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Button } from 'react-native';
+import { StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
+import { Container, Header, Tab, Tabs, ScrollableTab, Icon, Button, Card, CardItem, Content, Text, Body } from 'native-base';
 
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 50,
-    alignItems: 'center',
-  },
-  appName: {
-    alignItems: 'center',
-    fontSize: 30,
-    fontWeight: "bold",
-    fontFamily: "Roboto"
-  },
-  emailInput: {
-    marginTop: 10,
-    height: 40,
-    width: 200,
-    borderWidth: 2,
-    borderRadius: 20,
-  },
-  passwordInput: {
-    marginTop: 10,
-    height: 40,
-    width: 200,
-    borderWidth: 2,
-    borderRadius: 20,
-  },
-  loginButton: {
-    backgroundColor: 'black',
-    marginTop: 10,
-    height: 40,
-    width: 200,
-    borderWidth: 2,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  loginButtonTxt: {
-    color: 'white',
-    fontSize: 15,
-    fontWeight: "bold",
-    fontFamily: "Roboto"
-  },
-  signUpText: {
-    color: 'black',
-    fontSize: 15,
-    fontFamily: "Roboto"
-  },
-  signUpButton: {
-    color: 'black',
-    fontSize: 15,
-    fontWeight: "bold",
-    fontFamily: "Roboto",
-    flexDirection: 'row'
-  },
+
 });
 
 
 const CalendarScreen = ({ navigation }) => {
-
   
 
+  let cars = [
+    {
+      "color": "purple",
+      "type": "minivan",
+      "Balance": "400",
+      "registration": new Date('2017-01-03'),
+      "capacity": 7
+    },
+    {
+      "color": "red",
+      "type": "station wagon",
+      "Balance": "200",
+      "registration": new Date('2018-03-03'),
+      "capacity": 5
+    }
+  ]
+
+
   return (
-    <View style={styles.container}>
+    <Container>
+      <Header hasTabs />
 
-      <Text>hello </Text>
-
-
-
-    </View>
+      <Tabs renderTabBar={() => <ScrollableTab />}>
+        {cars.map(info => (
+          <Tab heading={info.color}>
+            <Content>
+              <Card>
+                <CardItem header>
+                  <Text>Acccount Balance</Text>
+                </CardItem>
+                <CardItem>
+                  <Body>
+                    <Text>
+                    <Text style={styles.signUpButton}> {info.Balance}</Text>
+                </Text>
+                  </Body>
+                </CardItem>
+              </Card>
+            </Content>
+          </Tab>
+        ))}
+      </Tabs>
+    </Container>
 
   );
 }
 
 export default CalendarScreen;
+
+
 

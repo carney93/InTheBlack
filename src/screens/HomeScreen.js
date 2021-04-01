@@ -79,6 +79,9 @@ const HomeScreen = ({ navigation }) => {
   const goToDaily = () => {
     navigation.replace('DailySpending')
   }
+  const goCalendar = () => {
+    navigation.replace('Calendar')
+  }
 
 
   let id = auth().currentUser.uid;
@@ -114,6 +117,7 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.signUpButton}> hello {userDetail.email}</Text>
 
       <Button title="Go to Accounts" onPress={goToAccounts} />
+      <Button title="Go to Calendar" onPress={goCalendar} />
 
       <Button title="Go to Incomes" onPress={goToIncomes} />
       <Button title="Go to Daily Spending" onPress={goToDaily} />
