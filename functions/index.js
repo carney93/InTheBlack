@@ -5,18 +5,16 @@ admin.initializeApp(functions.config().firebase);
 const database = admin.database();
 
 
-// // Scheduled Function
-exports.pushDataEveryMinute = functions.pubsub.schedule("every 5 minutes")
+// // Scheduled Function to run at midnight every night
+exports.updatingIncomes = functions.pubsub.schedule("0 0 * * *")
   .onRun((context) => {
 
+   database.ref("incomes /").on("value", (dataSnapshot) => {
+    dataSnapshot.forEach((child) => {
 
-    database.ref("incomes /").on("value", (dataSnapshot) => {
+        var date = new Date();
+        var milliseconds = date.getTime();
 
-      var date = new Date();
-      var milliseconds = date.getTime();
-
-      dataSnapshot.forEach((child) => {
-        functions.logger.info("testing: ", child.val().income.name, child.val().income.amount)
         if (child.val().income.firstDate < milliseconds) {
 
           database.ref("financialAccounts /").on("value", (dataSnapshot) => {
@@ -31,19 +29,65 @@ exports.pushDataEveryMinute = functions.pubsub.schedule("every 5 minutes")
                       uuid: child2.val().financialAccount.uuid,
                     },
                   });
-                return null;
               }
             });
           });
+        }
 
-          if (child.val().income.frequency === "Every Week") {
+        if (child.val().income.frequency === "Every Week") {
 
-          } else if (child.val().income.frequency === "Every 2 Weeks") {
+          var todaysdate = new Date().getTime();
+          var updatedDate = todaysdate + 6.048e+8;
 
-          } else if (child.val().income.frequency === "Every Month") {
+          database
+            .ref('incomes /' + child.key)
+            .update({
+              income: {
+                name: child.val().income.name,
+                amount: child.val().income.amount,
+                targetAccount: child.val().income.targetAccount,
+                firstDate: updatedDate,
+                frequency: child.val().income.frequency,
+                uuid: child.val().income.uuid,
+              },
+            });
 
-          }
+        } else if (child.val().income.frequency === "Every 2 Weeks") {
 
+          var todaysdate = new Date().getTime();
+          var updatedDate = todaysdate + (6.048e+8 * 2);
+
+          database
+            .ref('incomes /' + child.key)
+            .update({
+              income: {
+                name: child.val().income.name,
+                amount: child.val().income.amount,
+                targetAccount: child.val().income.targetAccount,
+                firstDate: updatedDate,
+                frequency: child.val().income.frequency,
+                uuid: child.val().income.uuid,
+              },
+            });
+
+        } else if (child.val().income.frequency === "Every Month") {
+
+
+          var todaysdate = new Date().getTime();
+          var updatedDate = todaysdate + (6.048e+8 * 4);
+
+          database
+            .ref('incomes /' + child.key)
+            .update({
+              income: {
+                name: child.val().income.name,
+                amount: child.val().income.amount,
+                targetAccount: child.val().income.targetAccount,
+                firstDate: updatedDate,
+                frequency: child.val().income.frequency,
+                uuid: child.val().income.uuid,
+              },
+            });
         }
       });
     });

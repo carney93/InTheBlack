@@ -226,33 +226,7 @@ const AccountsScreen = ({ navigation }) => {
               </Body>
             </Content>
 
-            <Modal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}>
-              <View style={{ flex: 1 }}>
-                <Content>
-                  <Card>
-                    <Text style={styles.modalTitle}>Add New Account</Text>
-                    <CardItem>
-                      <Body>
-                        <TextInput placeholder="Enter Amount in Account"
-                          onChangeText={text => setAccount(text)}
-                        />
-                        <TextInput placeholder="Enter Account name"
-                          onChangeText={text => setAccountName(text)}
-                        />
-                        <Body style={styles.modalButtons}>
-                          <Button rounded onPress={toggleModal}>
-                            <Text>Close</Text>
-                          </Button>
-                          <Button rounded onPress={addAccount} style={styles.addButtonModal}>
-                            <Text>Add Account</Text>
-                          </Button>
-                        </Body>
-                      </Body>
-                    </CardItem>
-                  </Card>
-                </Content>
-              </View>
-            </Modal>
+
 
             <Modal isVisible={isModalVisible2} onBackdropPress={() => setModalVisible2(false)}>
               <View style={{ flex: 1 }}>
@@ -283,8 +257,39 @@ const AccountsScreen = ({ navigation }) => {
                 </Content>
               </View>
             </Modal>
+          </Tab>
+        ))}
+      </Tabs>
 
-            <View style={styles.footer} >
+      <Modal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}>
+              <View style={{ flex: 1 }}>
+                <Content>
+                  <Card>
+                    <Text style={styles.modalTitle}>Add New Account</Text>
+                    <CardItem>
+                      <Body>
+                        <TextInput placeholder="Enter Amount in Account"
+                          onChangeText={text => setAccount(text)}
+                        />
+                        <TextInput placeholder="Enter Account name"
+                          onChangeText={text => setAccountName(text)}
+                        />
+                        <Body style={styles.modalButtons}>
+                          <Button rounded onPress={toggleModal}>
+                            <Text>Close</Text>
+                          </Button>
+                          <Button rounded onPress={addAccount} style={styles.addButtonModal}>
+                            <Text>Add Account</Text>
+                          </Button>
+                        </Body>
+                      </Body>
+                    </CardItem>
+                  </Card>
+                </Content>
+              </View>
+            </Modal>
+            
+      <View style={styles.footer} >
               <Button transparent onPress={() => updateAccountModal(info.name, info.amount)}>
                 <Icon style={styles.UpdateButton} name='pencil' />
               </Button>
@@ -292,9 +297,6 @@ const AccountsScreen = ({ navigation }) => {
                 <Icon style={styles.addButton} name='add-circle-outline' />
               </Button>
             </View>
-          </Tab>
-        ))}
-      </Tabs>
     </Container>
 
 
