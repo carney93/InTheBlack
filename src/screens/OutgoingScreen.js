@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
 });
 
 
-const IncomeScreen = ({ navigation }) => {
+const OutgoingScreen = ({ navigation }) => {
 
 
     const [mode, setMode] = useState('date');
@@ -115,17 +115,21 @@ const IncomeScreen = ({ navigation }) => {
 
 
 
+    const [userDetail, setUserDetail] = useState({
+        id: '',
+        email: '',
+    });
 
 
 
     const [accountInfo, setAccountInfo] = useState([
     ]);
 
-    const [incomeInfo, setIncomeInfo] = useState([
+    const [outgoingInfo, setOutgoingInfo] = useState([
     ]);
 
-    const [incomeAmount, setIncomeAmount] = useState('');
-    const [incomeName, setIncomeName] = useState('');
+    const [outgoingAmount, setOutgoingAmount] = useState('');
+    const [outgoingName, setOutgoingName] = useState('');
     const [totalBalance, setTotalBalance] = useState('');
     const [selectedAccount, setSelectedAccount] = useState("");
     const [selectedFrequency, setSelectedFrequency] = useState("");
@@ -133,8 +137,8 @@ const IncomeScreen = ({ navigation }) => {
     const [todaysDate, setTodaysDate] = useState(new Date());
     const [paymentDate, setPaymentDate] = useState(new Date(todaysDate.getTime()));
 
-    const [updatedIncome, setUpdatedIncome] = useState("");
-    const [updatedIncomeName, setUpdatedIncomeName] = useState("");
+    const [updatedOutgoing, setUpdatedOutgoing] = useState("");
+    const [updatedOutgoingName, setUpdatedOutgoingName] = useState("");
     const [updatedTargetAccount, setUpdatedTargetAccount] = useState("");
     const [updatedFrequency, setUpdatedFrequency] = useState("");
     const [updatedDate, setUpdatedDate] = useState(new Date(1598051730000));
@@ -143,8 +147,8 @@ const IncomeScreen = ({ navigation }) => {
 
     let id = auth().currentUser.uid;
 
-    deleteIncome = (accountId) => {
-        var record = firebase.database().ref('incomes /' + accountId);
+    deleteOutgoing = (accountId) => {
+        var record = firebase.database().ref('outgoings /' + accountId);
         record.remove();
     }
 
@@ -169,8 +173,8 @@ const IncomeScreen = ({ navigation }) => {
     };
 
     updateAccountModal = (name, amount, targetAccount, frequency, nextDate) => {
-        setUpdatedIncome(amount);
-        setUpdatedIncomeName(name);
+        setUpdatedOutgoing(amount);
+        setUpdatedOutgoingName(name);
         setUpdatedTargetAccount(targetAccount);
         setUpdatedFrequency(frequency);
         toggleModal2();
@@ -180,14 +184,14 @@ const IncomeScreen = ({ navigation }) => {
 
 
 
-    addIncome = () => {
+    addOutgoing = () => {
         firebase
             .database()
-            .ref('incomes /')
+            .ref('outgoings /')
             .push({
-                income: {
-                    name: incomeName,
-                    amount: incomeAmount,
+                outgoing: {
+                    name: outgoingName,
+                    amount: outgoingAmount,
                     targetAccount: selectedAccount,
                     firstDate: paymentDate.getTime(),
                     frequency: selectedFrequency,
@@ -215,35 +219,35 @@ const IncomeScreen = ({ navigation }) => {
         });
     }, []);
 
-    //getting incomes
+    //getting outgoings
     useEffect(() => {
-        firebase.database().ref('incomes /').on('value', (dataSnapshot) => {
+        firebase.database().ref('outgoings /').on('value', (dataSnapshot) => {
             let items = [];
             dataSnapshot.forEach((child) => {
-                if (id === child.val().income.uuid) {
+                if (id === child.val().outgoing.uuid) {
                     items.push({
-                        name: child.val().income.name,
-                        amount: child.val().income.amount,
-                        targetAccount: child.val().income.targetAccount,
-                        frequency: child.val().income.frequency,
-                        nextDate:child.val().income.firstDate,
+                        name: child.val().outgoing.name,
+                        amount: child.val().outgoing.amount,
+                        targetAccount: child.val().outgoing.targetAccount,
+                        frequency: child.val().outgoing.frequency,
+                        nextDate:child.val().outgoing.firstDate,
                         accountId: child.key,
                     });
                 }
             });
-            setIncomeInfo(items);
+            setOutgoingInfo(items);
         });
     }, []);
 
 
-    updateIncome = (accountId) => {
+    updateOutgoing = (accountId) => {
         firebase
           .database()
-          .ref('incomes /' + accountId)
+          .ref('outgoings /' + accountId)
           .update({
-            income: {
-                name: updatedIncomeName,
-                amount: updatedIncome,
+            outgoing: {
+                name: updatedOutgoingName,
+                amount: updatedOutgoing,
                 targetAccount: updatedTargetAccount,
                 frequency: updatedFrequency,
                 nextDate: updatedDate.getTime(),
@@ -274,6 +278,18 @@ const IncomeScreen = ({ navigation }) => {
 
 
 
+    useEffect(() => {
+        firebase.database().ref('users /').on('value', (dataSnapshot) => {
+            dataSnapshot.forEach((child) => {
+                if (id === child.val().user.uuid) {
+                    setUserDetail({
+                        id,
+                        email: child.val().user.email,
+                    });
+                }
+            });
+        });
+    }, []);
 
 
 
@@ -307,7 +323,7 @@ const IncomeScreen = ({ navigation }) => {
         <Container>
 
             <Tabs renderTabBar={() => <ScrollableTab />}>
-                {incomeInfo.map(info => (
+                {outgoingInfo.map(info => (
                     <Tab heading={info.name}>
                         <Content >
                             <Card style={styles.headerTitle}>
@@ -319,7 +335,7 @@ const IncomeScreen = ({ navigation }) => {
 
 
                             <Body style={styles.mainContent}>
-                                <Button danger rounded style={styles.deleteButton} onPress={() => deleteIncome(info.accountId)}>
+                                <Button danger rounded style={styles.deleteButton} onPress={() => deleteOutgoing(info.accountId)}>
                                     <Text>Delete</Text>
                                 </Button>
                             </Body>
@@ -329,16 +345,16 @@ const IncomeScreen = ({ navigation }) => {
                             <View style={{ flex: 1 }}>
                                 <Content>
                                     <Card>
-                                        <Text style={styles.modalTitle}>Add New Income</Text>
+                                        <Text style={styles.modalTitle}>Add New Outgoing</Text>
                                         <CardItem>
                                             <Body>
-                                                <TextInput placeholder="Update Income Name"
-                                                    value={updatedIncomeName}
-                                                    onChangeText={text => setUpdatedIncomeName(text)}
+                                                <TextInput placeholder="Update Outoing Name"
+                                                    value={updatedOutgoingName}
+                                                    onChangeText={text => setUpdatedOutgoingName(text)}
                                                 />
-                                                <TextInput placeholder="Update Income Amount"
-                                                    value={updatedIncome}
-                                                    onChangeText={text => setUpdatedIncome(text)}
+                                                <TextInput placeholder="Update Outgoing Amount"
+                                                    value={updatedOutgoing}
+                                                    onChangeText={text => setUpdatedOutgoing(text)}
                                                 />
                                                 <View style={{ marginLeft: -20, marginTop: 20 }}>
 
@@ -359,7 +375,7 @@ const IncomeScreen = ({ navigation }) => {
 
                                                 <Picker
                                                     selectedValue={updatedFrequency}
-                                                    placeholder='Update frequency of Income'
+                                                    placeholder='Update frequency of Outgoing'
                                                     style={{ height: 50, width: 150 }}
                                                     onValueChange={(itemValue) => setUpdatedFrequency(itemValue)}
                                                 >
@@ -382,8 +398,8 @@ const IncomeScreen = ({ navigation }) => {
                                                     <Button rounded onPress={toggleModal2}>
                                                         <Text>Close</Text>
                                                     </Button>
-                                                    <Button rounded onPress={() => updateIncome(info.accountId)}  style={styles.addButtonModal}>
-                                                        <Text>Add Income</Text>
+                                                    <Button rounded onPress={() => updateOutgoing(info.accountId)}  style={styles.addButtonModal}>
+                                                        <Text>Add Outgoing</Text>
                                                     </Button>
                                                 </Body>
                                             </Body>
@@ -406,7 +422,7 @@ const IncomeScreen = ({ navigation }) => {
                 ))}
             </Tabs>
 
-            {!incomeInfo[0] ? (
+            {!outgoingInfo[0] ? (
                 <View style={styles.footer} >
 
                     <Button transparent onPress={toggleModal} >
@@ -422,14 +438,14 @@ const IncomeScreen = ({ navigation }) => {
                 <View style={{ flex: 1 }}>
                     <Content>
                         <Card>
-                            <Text style={styles.modalTitle}>Add New Income</Text>
+                            <Text style={styles.modalTitle}>Add New Outgoing</Text>
                             <CardItem>
                                 <Body>
-                                    <TextInput placeholder="Enter Income Name"
-                                        onChangeText={text => setIncomeName(text)}
+                                    <TextInput placeholder="Enter Outgoing Name"
+                                        onChangeText={text => setOutgoingName(text)}
                                     />
-                                    <TextInput placeholder="Enter Income Amount"
-                                        onChangeText={text => setIncomeAmount(text)}
+                                    <TextInput placeholder="Enter Outgoing Amount"
+                                        onChangeText={text => setOutgoingAmount(text)}
                                     />
                                     <View style={{ marginLeft: -20, marginTop: 20 }}>
 
@@ -450,7 +466,7 @@ const IncomeScreen = ({ navigation }) => {
 
                                     <Picker
                                         selectedValue={selectedFrequency}
-                                        placeholder='Select frequency of income'
+                                        placeholder='Select frequency of Outgoing'
                                         style={{ height: 50, width: 150 }}
                                         onValueChange={(itemValue) => setSelectedFrequency(itemValue)}
                                     >
@@ -474,8 +490,8 @@ const IncomeScreen = ({ navigation }) => {
                                         <Button rounded onPress={toggleModal}>
                                             <Text>Close</Text>
                                         </Button>
-                                        <Button rounded onPress={addIncome} style={styles.addButtonModal}>
-                                            <Text>Add Income</Text>
+                                        <Button rounded onPress={addOutgoing} style={styles.addButtonModal}>
+                                            <Text>Add Outgoing</Text>
                                         </Button>
                                     </Body>
                                 </Body>
@@ -512,4 +528,4 @@ const IncomeScreen = ({ navigation }) => {
 
 }
 
-export default IncomeScreen;
+export default OutgoingScreen;

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Button, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, TextInput, ScrollView } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
+import { Container, Header, Subtitle, Left, Right, Title, Tab, Tabs, ScrollableTab, Icon, Button, Card, CardItem, Content, Text, Body, Footer, FooterTab } from 'native-base';
 
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 50,
+  body: {
+    marginTop: 150,
     alignItems: 'center',
   },
   appName: {
@@ -29,48 +30,23 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 20,
   },
-  loginButton: {
-    backgroundColor: 'black',
+  addAccountButton: {
     marginTop: 10,
-    height: 40,
-    width: 200,
-    borderWidth: 2,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center'
+    marginLeft: 100,
   },
-  loginButtonTxt: {
-    color: 'white',
-    fontSize: 15,
-    fontWeight: "bold",
-    fontFamily: "Roboto"
+
+  text: {
+    padding: 10,
   },
-  signUpText: {
-    color: 'black',
-    fontSize: 15,
-    fontFamily: "Roboto"
-  },
-  signUpButton: {
-    color: 'black',
-    fontSize: 15,
-    fontWeight: "bold",
-    fontFamily: "Roboto",
-    flexDirection: 'row'
-  },
+
 });
 
 
 const OnboardScreen = ({ navigation }) => {
 
-  const [userDetail, setUserDetail] = useState({
-    id: '',
-    email: '',
-  });
 
 
 
-  const [userAccountInfo, setUserAccountInfo] = useState([
-  ]);
 
   const [account, setAccount] = useState('');
   const [accountName, setAccountName] = useState('');
@@ -80,24 +56,6 @@ const OnboardScreen = ({ navigation }) => {
 
 
 
-
-  useEffect(() => {
-    firebase.database().ref('financialAccounts /').on('value', (dataSnapshot) => {
-      let items = [];
-      dataSnapshot.forEach((child) => {
-        if (id === child.val().financialAccount.uuid) {
-          items.push({
-            name: child.val().financialAccount.name,
-            amount: child.val().financialAccount.amount,
-            accountId: child.key,
-          });
-        }
-      });
-      setUserAccountInfo(items);
-    });
-  }, []);
-
-
   useEffect(() => {
     firebase.database().ref('financialAccounts /').on('value', (dataSnapshot) => {
       let items = [];
@@ -115,23 +73,7 @@ const OnboardScreen = ({ navigation }) => {
 
 
 
-  useEffect(() => {
-    firebase.database().ref('users /').on('value', (dataSnapshot) => {
-      dataSnapshot.forEach((child) => {
-        if (id === child.val().user.uuid) {
-          setUserDetail({
-            id,
-            email: child.val().user.email,
-          });
-        }
-      });
-    });
-  }, []);
 
-  deleteAccount = (accountId) => {
-    var record = firebase.database().ref('financialAccounts /' +accountId);
-    record.remove();
-  }
 
 
   addAccount = () => {
@@ -145,43 +87,39 @@ const OnboardScreen = ({ navigation }) => {
           uuid: auth().currentUser.uid,
         },
       });
+    navigation.replace('OnboardIncomes')
   }
 
 
-  completeSignup = () => {
-
-    navigation.replace('Drawer')
-  }
 
   return (
-    <View style={styles.container}>
-
-      <Text style={styles.signUpButton}> Welcome {userDetail.email} to the app. Please enter your fianancial institutions and enter amount</Text>
 
 
-      <TextInput placeholder="Enter Account"
-        style={styles.emailInput}
-        onChangeText={text => setAccount(text)}
-      />
-      <TextInput placeholder="Enter Account name"
-        style={styles.emailInput}
-        onChangeText={text => setAccountName(text)}
-      />
+    <Container>
+      <Body style={styles.body}>
+
+        <Text style={styles.text} >
+          Hello. Please enter your fianancial accounts details here. You can add more later
+          </Text>
 
 
-      <Button title="Add Account" onPress={addAccount} />
+        <TextInput placeholder="Enter Accont Amount"
+          style={styles.emailInput}
+          onChangeText={text => setAccount(text)}
+        />
+        <TextInput placeholder="Enter Account name"
+          style={styles.emailInput}
+          onChangeText={text => setAccountName(text)}
+        />
+        <Button style={styles.addAccountButton} rounded onPress={addAccount}>
+          <Text>Add Account</Text>
+        </Button>
+      </Body>
+
+    </Container>
 
 
 
-      <ScrollView>
-        {userAccountInfo.map(info => (
-          <Text key={info.accountId}>{info.amount}<Button title="X" onPress={() => deleteAccount(info.accountId)} /></Text>
-        ))}
-      </ScrollView>
-
-
-      <Button title="Finish" onPress={completeSignup} />
-    </View>
 
   );
 }

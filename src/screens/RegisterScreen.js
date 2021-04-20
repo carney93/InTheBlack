@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'black',
-    borderColor: "black"
+    borderColor: "black",
   },
   signUpText: {
     color: 'black',
@@ -90,6 +90,7 @@ const RegisterScreen = ({ navigation }) => {
 
 
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
 
 
@@ -117,6 +118,7 @@ const RegisterScreen = ({ navigation }) => {
           .ref('users /')
           .push({
             user: {
+              name: name, //pass your email
               email: email, //pass your email
               uuid: auth().currentUser.uid,
             },
@@ -141,6 +143,11 @@ const RegisterScreen = ({ navigation }) => {
 
     <Image style={{ width: 120, height: 120 }} source={require('../../assets/logo.png')} />
     <Text h1 style={styles.appName}>In The Black</Text>
+
+    <Item style={styles.input}>
+        <Input 
+        onChangeText={text => setName(text)} style={styles.inputText} placeholder='First Name' />
+      </Item>
 
     <Item style={styles.input}>
         <Input 

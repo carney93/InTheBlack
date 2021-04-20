@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, TextInput } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
-import { Container, Header, Tab, Tabs, ScrollableTab, Icon, Button, Card, CardItem, Content, Text, Body, Footer } from 'native-base';
+import { Container, Header, Subtitle, Left, Right, Title, Tab, Tabs, ScrollableTab, Icon, Button, Card, CardItem, Content, Text, Body, Footer, FooterTab } from 'native-base';
 import Modal from 'react-native-modal';
+
 
 
 
@@ -13,10 +14,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     justifyContent: 'center',
     textAlign: 'center',
+
   },
   deleteButton: {
     height: 40,
-    borderWidth: 2,
+
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
@@ -43,7 +45,8 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    backgroundColor: 'transparent'
   },
   modalTitle: {
     alignItems: 'center',
@@ -66,6 +69,11 @@ const AccountsScreen = ({ navigation }) => {
   const [userAccountInfo, setUserAccountInfo] = useState([
   ]);
 
+  const [incomeInfo, setIncomeInfo] = useState([
+  ]);
+
+  const [dailySpending, setDailySpending] = useState([
+  ]);
 
 
 
@@ -80,6 +88,21 @@ const AccountsScreen = ({ navigation }) => {
   deleteAccount = (accountId) => {
     var record = firebase.database().ref('financialAccounts /' + accountId);
     record.remove();
+
+    for (let i = 0; i < incomeInfo.length; i++) {
+      if (accountId === incomeInfo[i].targetAccount) {
+        var incomeRecord = firebase.database().ref('incomes /' + incomeInfo[i].accountId);
+        incomeRecord.remove();
+      }
+    }
+
+    for (let i = 0; i < dailySpending.length; i++) {
+      if (accountId === dailySpending[i].targetAccount) {
+        var spendingRecord = firebase.database().ref('dailySpendings /' + dailySpending[i].spendingId);
+        spendingRecord.remove();
+      }
+    }
+
   }
 
   logOut = () => {
@@ -120,7 +143,41 @@ const AccountsScreen = ({ navigation }) => {
     setModalVisible2(false)
   }
 
+  //getting incomes so they can be removed if the bank account they are targeting is deleted
+  useEffect(() => {
+    firebase.database().ref('incomes /').on('value', (dataSnapshot) => {
+      let items = [];
+      dataSnapshot.forEach((child) => {
+        if (id === child.val().income.uuid) {
+          items.push({
+            targetAccount: child.val().income.targetAccount,
+            accountId: child.key,
+          });
+        }
+      });
+      setIncomeInfo(items);
+    });
+  }, []);
 
+  //getting spendings so they can be removed if the bank account they are targeting is deleted
+  useEffect(() => {
+    firebase.database().ref('dailySpendings /').on('value', (dataSnapshot) => {
+      let items = [];
+      dataSnapshot.forEach((child) => {
+        if (id === child.val().dailySpending.uuid) {
+          items.push({
+            name: child.val().dailySpending.spendingName,
+            amount: child.val().dailySpending.spendingAmount,
+            targetAccount: child.val().dailySpending.targetAccount,
+            category: child.val().dailySpending.category,
+            date: child.val().dailySpending.spendingDate,
+            spendingId: child.key,
+          });
+        }
+      });
+      setDailySpending(items);
+    });
+  }, []);
 
 
   useEffect(() => {
@@ -165,10 +222,26 @@ const AccountsScreen = ({ navigation }) => {
     });
   }, [userAccountInfo]);
 
-  const goHome = () => {
+
+
+  const goToHome = () => {
     navigation.replace('Home')
   }
 
+  const goToInOut = () => {
+    navigation.replace('InOut')
+  }
+
+
+
+
+
+  const goToDaily = () => {
+    navigation.replace('DailySpending')
+  }
+  const goToMySpending = () => {
+    navigation.replace('Calendar')
+  }
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [isModalVisible2, setModalVisible2] = useState(false);
@@ -194,34 +267,71 @@ const AccountsScreen = ({ navigation }) => {
     });
   }, []);
 
+  function displayTransactions(id) {
+
+
+
+
+    let chartInfo = dailySpending.map((item) => {
+
+
+
+      if (item.targetAccount === id) {
+
+        const date = new Date(item.date)
+        console.log(date)
+        return (
+          <Card style={{ alignItems: 'center' }}>
+            <CardItem style={{ borderRadius: 20 }}>
+              <Left>
+                <View style={{ alignItems: 'flex-start', marginTop: 2 }}>
+                  <Title style={{ color: 'black', marginLeft: 10 }}>- €{item.amount} </Title>
+                  <Subtitle style={{ color: 'black' }}> {date.toUTCString()}</Subtitle>
+                </View>
+              </Left>
+              <Right>
+                <Subtitle style={{ color: 'black', marginRight: 10 }}>{item.name}</Subtitle>
+              </Right>
+            </CardItem>
+          </Card>
+        )
+      }
+    });
+
+
+    return chartInfo
+  }
+
+
 
   return (
 
     <Container>
-      <Header hasTabs />
+
       <Tabs renderTabBar={() => <ScrollableTab />}>
         {userAccountInfo.map(info => (
           <Tab heading={info.name}>
-            <Content>
-              <Card>
+            <Content >
+              <Card style={styles.headerTitle}>
                 <CardItem headers style={styles.headerTitle}>
-                  <Text>Account Balance</Text>
+                  <Title style={{ color: 'black' }}>{info.name} Balance</Title>
                 </CardItem>
                 <CardItem>
                   <Body style={styles.headerTitle}>
-                    <Text>
-                      <Text>{info.amount}</Text>
-                    </Text>
+                    <Title style={{ color: 'black' }}>€{info.amount}</Title>
                   </Body>
                 </CardItem>
               </Card>
 
+              <Content>
+                <Title style={{ color: 'black' }}>Transactions</Title>
+
+                {displayTransactions(info.accountId)}
+
+              </Content>
               <Body style={styles.mainContent}>
-                <Button rounded style={styles.deleteButton} onPress={goHome} >
-                  <Text>Go Home</Text>
-                </Button>
-                <Button rounded style={styles.deleteButton} onPress={() => deleteAccount(info.accountId)}>
-                  <Text>Delete</Text>
+                <Button danger rounded style={styles.deleteButton} onPress={() => deleteAccount(info.accountId)}>
+                  <Text>Delete Account</Text>
                 </Button>
               </Body>
             </Content>
@@ -257,46 +367,83 @@ const AccountsScreen = ({ navigation }) => {
                 </Content>
               </View>
             </Modal>
+
+
+            <View style={styles.footer} >
+              <Button transparent onPress={toggleModal} >
+                <Icon style={styles.addButton} name='add-circle-outline' />
+              </Button>
+              <Button transparent onPress={() => updateAccountModal(info.name, info.amount)}>
+                <Icon style={styles.UpdateButton} name='pencil' />
+              </Button>
+            </View>
           </Tab>
         ))}
       </Tabs>
 
+      {!userAccountInfo[0] ? (
+        <View style={styles.footer} >
+
+          <Button transparent onPress={toggleModal} >
+            <Icon style={styles.addButton} name='add-circle-outline' />
+          </Button>
+        </View>
+      ) : (
+        <View style={styles.footer} >
+        </View>
+      )}
+
+
       <Modal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}>
-              <View style={{ flex: 1 }}>
-                <Content>
-                  <Card>
-                    <Text style={styles.modalTitle}>Add New Account</Text>
-                    <CardItem>
-                      <Body>
-                        <TextInput placeholder="Enter Amount in Account"
-                          onChangeText={text => setAccount(text)}
-                        />
-                        <TextInput placeholder="Enter Account name"
-                          onChangeText={text => setAccountName(text)}
-                        />
-                        <Body style={styles.modalButtons}>
-                          <Button rounded onPress={toggleModal}>
-                            <Text>Close</Text>
-                          </Button>
-                          <Button rounded onPress={addAccount} style={styles.addButtonModal}>
-                            <Text>Add Account</Text>
-                          </Button>
-                        </Body>
-                      </Body>
-                    </CardItem>
-                  </Card>
-                </Content>
-              </View>
-            </Modal>
-            
-      <View style={styles.footer} >
-              <Button transparent onPress={() => updateAccountModal(info.name, info.amount)}>
-                <Icon style={styles.UpdateButton} name='pencil' />
-              </Button>
-              <Button transparent onPress={toggleModal} >
-                <Icon style={styles.addButton} name='add-circle-outline' />
-              </Button>
-            </View>
+        <View style={{ flex: 1 }}>
+          <Content>
+            <Card>
+              <Text style={styles.modalTitle}>Add New Account</Text>
+              <CardItem>
+                <Body>
+                  <TextInput placeholder="Enter Amount in Account"
+                    onChangeText={text => setAccount(text)}
+                  />
+                  <TextInput placeholder="Enter Account name"
+                    onChangeText={text => setAccountName(text)}
+                  />
+                  <Body style={styles.modalButtons}>
+                    <Button rounded onPress={toggleModal}>
+                      <Text>Close</Text>
+                    </Button>
+                    <Button rounded onPress={addAccount} style={styles.addButtonModal}>
+                      <Text>Add Account</Text>
+                    </Button>
+                  </Body>
+                </Body>
+              </CardItem>
+            </Card>
+          </Content>
+        </View>
+      </Modal>
+
+
+
+      <Footer>
+        <FooterTab>
+          <Button onPress={goToHome}>
+            <Icon name='home' />
+          </Button>
+          <Button active>
+            <Icon name='wallet' />
+          </Button>
+          <Button onPress={goToInOut}>
+            <Icon name='swap-horizontal' />
+          </Button>
+          <Button onPress={goToDaily}>
+            <Icon name='calendar' />
+          </Button>
+          <Button onPress={goToMySpending}>
+            <Icon name='analytics' />
+          </Button>
+        </FooterTab>
+      </Footer>
+
     </Container>
 
 

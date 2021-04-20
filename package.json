@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@firebase/auth": "^0.16.2",
+    "@material-ui/icons": "^4.11.2",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/datetimepicker": "^3.3.0",
     "@react-native-community/masked-view": "^0.1.10",
@@ -29,15 +30,18 @@
     "react": "16.13.1",
     "react-native": "^0.63.4",
     "react-native-calendar-strip": "^2.2.0",
+    "react-native-charts-wrapper": "^0.5.7",
     "react-native-gesture-handler": "^1.9.0",
     "react-native-modal": "^11.7.0",
     "react-native-paper": "^4.7.1",
     "react-native-reanimated": "^1.13.2",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "^2.17.1",
+    "react-native-svg": "^12.1.1-0",
     "react-native-vector-icons": "^8.1.0",
     "react-navigation": "^4.4.3",
-    "react-navigation-stack": "^2.10.2"
+    "react-navigation-stack": "^2.10.2",
+    "victory-native": "^35.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",

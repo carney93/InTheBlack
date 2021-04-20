@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, ScrollView, Button } from 'react-native';
+import { View, Image, StyleSheet, TextInput, ScrollView } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
 import CalendarStrip from 'react-native-calendar-strip';
 import Modal from 'react-native-modal';
 import { Picker } from '@react-native-picker/picker';
+import { Icon, Text, Footer, FooterTab, Button } from 'native-base';
 
 
 const styles = StyleSheet.create({
@@ -29,6 +30,7 @@ const DailySpendingScreen = ({ navigation }) => {
   const [spendingAmount, setSpendingamount] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date().getTime());
   const [selectedAccount, setSelectedAccount] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const [accountInfo, setAccountInfo] = useState([
   ]);
@@ -41,6 +43,8 @@ const DailySpendingScreen = ({ navigation }) => {
 
   const [spendingAdded, setSpendingAdded] = useState(false);
   const [spendingDeleted, setSpendingDeleted] = useState(false);
+
+  let spendingCategories = ['Housing', 'Transportation', 'Food', 'Utilities', 'Clothing', 'Medical/Healthcare', 'Insurance', 'Household Items/Supplies', 'Personal', 'Loans', 'Education', 'Savings', 'Gifts/Donations', 'Entertainment']
 
 
 
@@ -63,12 +67,13 @@ const DailySpendingScreen = ({ navigation }) => {
             name: child.val().dailySpending.spendingName,
             amount: child.val().dailySpending.spendingAmount,
             targetAccount: child.val().dailySpending.targetAccount,
+            category: child.val().dailySpending.category,
             date: child.val().dailySpending.spendingDate,
             spendingId: child.key,
           });
         }
       });
-      setDailySpending(items); 
+      setDailySpending(items);
     });
   }, []);
 
@@ -86,7 +91,6 @@ const DailySpendingScreen = ({ navigation }) => {
         }
       });
       setAccountInfo(items);
-      setSelectedAccount(accountInfo[0].accountId);
     });
   }, []);
 
@@ -105,7 +109,7 @@ const DailySpendingScreen = ({ navigation }) => {
           });
       }
     }
-  }, [spendingAdded]);  
+  }, [spendingAdded]);
 
   const addItem = () => {
     firebase
@@ -116,6 +120,7 @@ const DailySpendingScreen = ({ navigation }) => {
           spendingName: spendingName,
           spendingAmount: spendingAmount,
           targetAccount: selectedAccount,
+          category: selectedCategory,
           spendingDate: selectedDate,
           uuid: auth().currentUser.uid,
         },
@@ -128,6 +133,23 @@ const DailySpendingScreen = ({ navigation }) => {
     var date = new Date(itemValue);
     var milliseconds = date.getTime();
     setSelectedDate(milliseconds);
+  }
+
+  const goToHome = () => {
+    navigation.replace('Home')
+  }
+
+  const goToInOut = () => {
+    navigation.replace('InOut')
+  }
+
+  const goToAccounts = () => {
+    navigation.replace('Accounts')
+  }
+
+
+  const goToMySpending = () => {
+    navigation.replace('Calendar')
   }
 
 
@@ -149,7 +171,7 @@ const DailySpendingScreen = ({ navigation }) => {
     var record = firebase.database().ref('dailySpendings /' + spendingId);
     record.remove();
     spendingDeleted ? setSpendingDeleted(false) : setSpendingDeleted(true);
-}
+  }
 
 
   useEffect(() => {
@@ -177,8 +199,10 @@ const DailySpendingScreen = ({ navigation }) => {
         onDateSelected={(itemValue) => convertDate(itemValue)}
       />
 
-      <Button title="Go Home" onPress={goHome} />
-      <Button title="Add" onPress={toggleModal} />
+
+      <Button rounded onPress={toggleModal}>
+        <Text>Add</Text>
+      </Button>
 
       <ScrollView>
         {displaySpending.map(info => (
@@ -208,7 +232,39 @@ const DailySpendingScreen = ({ navigation }) => {
         </Picker>
 
         <Button title="Add Item" onPress={addItem} />
+
+        <Picker
+          selectedValue={selectedCategory}
+          label='Select a Category'
+          style={{ height: 50, width: 150 }}
+          onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+        >
+          {spendingCategories.map((info, index) => (
+            <Picker.Item label={info} value={info} key={index} />
+          ))}
+        </Picker>
       </Modal>
+
+      <Footer>
+        <FooterTab>
+          <Button onPress={goToHome}>
+            <Icon name='home' />
+          </Button>
+          <Button onPress={goToAccounts}>
+            <Icon name='wallet' />
+          </Button>
+          <Button onPress={goToInOut}>
+            <Icon name='swap-horizontal' />
+          </Button>
+          <Button active>
+            <Icon name='calendar' />
+          </Button>
+          <Button onPress={goToMySpending}>
+            <Icon name='analytics' />
+          </Button>
+        </FooterTab>
+      </Footer>
+
     </View>
 
   );
