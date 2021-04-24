@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, TextInput, ScrollView, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
 import { Container, Header, Subtitle, Left, Right, Title, Tab, Tabs, ScrollableTab, Icon, Button, Card, CardItem, Content, Text, Body, Footer, FooterTab } from 'native-base';
@@ -28,13 +28,13 @@ const OnboardScreen = ({ navigation }) => {
     const [incomeAmount, setIncomeAmount] = useState('');
     const [incomeName, setIncomeName] = useState('');
     const [selectedAccount, setSelectedAccount] = useState("");
-    const [selectedFrequency, setSelectedFrequency] = useState("");
+    const [selectedFrequency, setSelectedFrequency] = useState("Every Week");
     let frequencies = ["Every Week", "Every 2 Weeks", "Every Month"];
     const [todaysDate, setTodaysDate] = useState(new Date());
     const [paymentDate, setPaymentDate] = useState(new Date(todaysDate.getTime()));
 
 
-   
+
 
 
 
@@ -83,6 +83,13 @@ const OnboardScreen = ({ navigation }) => {
 
 
     const addIncome = () => {
+        if (incomeAmount <= 0) {
+            Alert.alert('Alert', 'Amount need to be greater than 0');
+            return;
+          } else if (isNaN(incomeAmount)) {
+            Alert.alert('Alert', 'Amount needs to be a number');
+            return;
+          }
         firebase
             .database()
             .ref('incomes /')
@@ -96,7 +103,7 @@ const OnboardScreen = ({ navigation }) => {
                     uuid: auth().currentUser.uid,
                 },
             });
-            navigation.replace('OnboardOutgoings')
+        navigation.replace('OnboardOutgoings')
     }
 
 
@@ -115,6 +122,8 @@ const OnboardScreen = ({ navigation }) => {
                     onChangeText={text => setIncomeName(text)}
                 />
                 <TextInput placeholder="Enter Income Amount"
+                    type="number"
+                    keyboardType='numeric'
                     onChangeText={text => setIncomeAmount(text)}
                 />
                 <View style={{ marginLeft: -20, marginTop: 20 }}>
@@ -155,10 +164,15 @@ const OnboardScreen = ({ navigation }) => {
                     ))}
                 </Picker>
 
-
-                <Button rounded onPress={addIncome} style={styles.addAccountButton}>
-                    <Text>Add Income</Text>
-                </Button>
+                {!incomeName || !incomeAmount ? (
+                    <Button rounded disabled style={styles.addAccountButton}>
+                        <Text>Add Income</Text>
+                    </Button>
+                ) : (
+                    <Button rounded onPress={addIncome} style={styles.addAccountButton}>
+                        <Text>Add Income</Text>
+                    </Button>
+                )}
             </Body>
 
         </Container>

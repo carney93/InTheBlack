@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
 import { Picker } from '@react-native-picker/picker';
@@ -128,7 +128,7 @@ const IncomeScreen = ({ navigation }) => {
     const [incomeName, setIncomeName] = useState('');
     const [totalBalance, setTotalBalance] = useState('');
     const [selectedAccount, setSelectedAccount] = useState("");
-    const [selectedFrequency, setSelectedFrequency] = useState("");
+    const [selectedFrequency, setSelectedFrequency] = useState("Every Week");
     let frequencies = ["Every Week", "Every 2 Weeks", "Every Month"];
     const [todaysDate, setTodaysDate] = useState(new Date());
     const [paymentDate, setPaymentDate] = useState(new Date(todaysDate.getTime()));
@@ -139,7 +139,7 @@ const IncomeScreen = ({ navigation }) => {
     const [updatedFrequency, setUpdatedFrequency] = useState("");
     const [updatedDate, setUpdatedDate] = useState(new Date(1598051730000));
 
- 
+
 
     let id = auth().currentUser.uid;
 
@@ -168,19 +168,26 @@ const IncomeScreen = ({ navigation }) => {
         setModalVisible2(!isModalVisible2);
     };
 
-    updateAccountModal = (name, amount, targetAccount, frequency, nextDate) => {
+    updateAccountModal = (name, amount, targetAccount, frequency) => {
         setUpdatedIncome(amount);
         setUpdatedIncomeName(name);
         setUpdatedTargetAccount(targetAccount);
         setUpdatedFrequency(frequency);
         toggleModal2();
-      }
+    }
 
 
 
 
 
     addIncome = () => {
+        if (incomeAmount <= 0) {
+            Alert.alert('Alert', 'Amount need to be greater than 0');
+            return;
+        } else if (isNaN(incomeAmount)) {
+            Alert.alert('Alert', 'Amount needs to be a number');
+            return;
+        }
         firebase
             .database()
             .ref('incomes /')
@@ -195,6 +202,8 @@ const IncomeScreen = ({ navigation }) => {
                 },
             });
         setModalVisible(false)
+        setIncomeAmount("");
+        setIncomeName("");
     }
 
 
@@ -211,6 +220,11 @@ const IncomeScreen = ({ navigation }) => {
                     });
                 }
             });
+            if (items === undefined || items.length == 0) {
+                setSelectedAccount("")
+            } else {
+                setSelectedAccount(items[0].accountId)
+            }
             setAccountInfo(items);
         });
     }, []);
@@ -226,7 +240,7 @@ const IncomeScreen = ({ navigation }) => {
                         amount: child.val().income.amount,
                         targetAccount: child.val().income.targetAccount,
                         frequency: child.val().income.frequency,
-                        nextDate:child.val().income.firstDate,
+                        nextDate: child.val().income.firstDate,
                         accountId: child.key,
                     });
                 }
@@ -237,21 +251,28 @@ const IncomeScreen = ({ navigation }) => {
 
 
     updateIncome = (accountId) => {
+        if (updatedIncome <= 0) {
+            Alert.alert('Alert', 'Amount need to be greater than 0');
+            return;
+        } else if (isNaN(updatedIncome)) {
+            Alert.alert('Alert', 'Amount needs to be a number');
+            return;
+        }
         firebase
-          .database()
-          .ref('incomes /' + accountId)
-          .update({
-            income: {
-                name: updatedIncomeName,
-                amount: updatedIncome,
-                targetAccount: updatedTargetAccount,
-                frequency: updatedFrequency,
-                nextDate: updatedDate.getTime(),
-                uuid: auth().currentUser.uid,
-            },
-          });
+            .database()
+            .ref('incomes /' + accountId)
+            .update({
+                income: {
+                    name: updatedIncomeName,
+                    amount: updatedIncome,
+                    targetAccount: updatedTargetAccount,
+                    frequency: updatedFrequency,
+                    nextDate: updatedDate.getTime(),
+                    uuid: auth().currentUser.uid,
+                },
+            });
         setModalVisible2(false)
-      }
+    }
 
 
     useEffect(() => {
@@ -284,9 +305,9 @@ const IncomeScreen = ({ navigation }) => {
 
     const goToInOut = () => {
         navigation.replace('InOut')
-      }
-    
-    
+    }
+
+
 
     const goToAccounts = () => {
         navigation.replace('Accounts')
@@ -296,7 +317,7 @@ const IncomeScreen = ({ navigation }) => {
         navigation.replace('DailySpending')
     }
     const goToMySpending = () => {
-        navigation.replace('Calendar')
+        navigation.replace('Analysis')
     }
 
 
@@ -329,7 +350,7 @@ const IncomeScreen = ({ navigation }) => {
                             <View style={{ flex: 1 }}>
                                 <Content>
                                     <Card>
-                                        <Text style={styles.modalTitle}>Add New Income</Text>
+                                        <Text style={styles.modalTitle}>Update Income</Text>
                                         <CardItem>
                                             <Body>
                                                 <TextInput placeholder="Update Income Name"
@@ -337,6 +358,7 @@ const IncomeScreen = ({ navigation }) => {
                                                     onChangeText={text => setUpdatedIncomeName(text)}
                                                 />
                                                 <TextInput placeholder="Update Income Amount"
+                                                    keyboardType='numeric'
                                                     value={updatedIncome}
                                                     onChangeText={text => setUpdatedIncome(text)}
                                                 />
@@ -382,9 +404,15 @@ const IncomeScreen = ({ navigation }) => {
                                                     <Button rounded onPress={toggleModal2}>
                                                         <Text>Close</Text>
                                                     </Button>
-                                                    <Button rounded onPress={() => updateIncome(info.accountId)}  style={styles.addButtonModal}>
-                                                        <Text>Add Income</Text>
+                                                    {!updatedIncome || !updatedIncomeName ?  (
+                                                        <Button rounded disabled style={styles.addButtonModal}>
+                                                        <Text>Update Income</Text>
                                                     </Button>
+                                                    ) : (
+                                                        <Button rounded onPress={() => updateIncome(info.accountId)} style={styles.addButtonModal}>
+                                                        <Text>Update Income</Text>
+                                                    </Button>
+                                                    )}
                                                 </Body>
                                             </Body>
                                         </CardItem>
@@ -429,6 +457,7 @@ const IncomeScreen = ({ navigation }) => {
                                         onChangeText={text => setIncomeName(text)}
                                     />
                                     <TextInput placeholder="Enter Income Amount"
+                                        keyboardType='numeric'
                                         onChangeText={text => setIncomeAmount(text)}
                                     />
                                     <View style={{ marginLeft: -20, marginTop: 20 }}>
@@ -469,14 +498,19 @@ const IncomeScreen = ({ navigation }) => {
                                         ))}
                                     </Picker>
 
-
                                     <Body style={styles.modalButtons}>
                                         <Button rounded onPress={toggleModal}>
                                             <Text>Close</Text>
                                         </Button>
-                                        <Button rounded onPress={addIncome} style={styles.addButtonModal}>
-                                            <Text>Add Income</Text>
-                                        </Button>
+                                        {!incomeAmount || !incomeName || !selectedAccount ? (
+                                            <Button rounded disabled style={styles.addButtonModal}>
+                                                <Text>Add Income</Text>
+                                            </Button>
+                                        ) : (
+                                            <Button rounded onPress={addIncome} style={styles.addButtonModal}>
+                                                <Text>Add Income</Text>
+                                            </Button>
+                                        )}
                                     </Body>
                                 </Body>
                             </CardItem>

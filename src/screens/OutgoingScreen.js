@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
 import { Picker } from '@react-native-picker/picker';
@@ -132,7 +132,7 @@ const OutgoingScreen = ({ navigation }) => {
     const [outgoingName, setOutgoingName] = useState('');
     const [totalBalance, setTotalBalance] = useState('');
     const [selectedAccount, setSelectedAccount] = useState("");
-    const [selectedFrequency, setSelectedFrequency] = useState("");
+    const [selectedFrequency, setSelectedFrequency] = useState("Every Week");
     let frequencies = ["Every Week", "Every 2 Weeks", "Every Month"];
     const [todaysDate, setTodaysDate] = useState(new Date());
     const [paymentDate, setPaymentDate] = useState(new Date(todaysDate.getTime()));
@@ -143,7 +143,7 @@ const OutgoingScreen = ({ navigation }) => {
     const [updatedFrequency, setUpdatedFrequency] = useState("");
     const [updatedDate, setUpdatedDate] = useState(new Date(1598051730000));
 
- 
+
 
     let id = auth().currentUser.uid;
 
@@ -178,13 +178,20 @@ const OutgoingScreen = ({ navigation }) => {
         setUpdatedTargetAccount(targetAccount);
         setUpdatedFrequency(frequency);
         toggleModal2();
-      }
+    }
 
 
 
 
 
     addOutgoing = () => {
+        if (outgoingAmount <= 0) {
+            Alert.alert('Alert', 'Amount need to be greater than 0');
+            return;
+        } else if (isNaN(outgoingAmount)) {
+            Alert.alert('Alert', 'Amount needs to be a number');
+            return;
+        }
         firebase
             .database()
             .ref('outgoings /')
@@ -199,6 +206,8 @@ const OutgoingScreen = ({ navigation }) => {
                 },
             });
         setModalVisible(false)
+        setOutgoingName("")
+        setOutgoingAmount("")
     }
 
 
@@ -215,6 +224,11 @@ const OutgoingScreen = ({ navigation }) => {
                     });
                 }
             });
+            if (items === undefined || items.length == 0) {
+                setSelectedAccount("")
+            } else {
+                setSelectedAccount(items[0].accountId)
+            }
             setAccountInfo(items);
         });
     }, []);
@@ -230,7 +244,7 @@ const OutgoingScreen = ({ navigation }) => {
                         amount: child.val().outgoing.amount,
                         targetAccount: child.val().outgoing.targetAccount,
                         frequency: child.val().outgoing.frequency,
-                        nextDate:child.val().outgoing.firstDate,
+                        nextDate: child.val().outgoing.firstDate,
                         accountId: child.key,
                     });
                 }
@@ -241,21 +255,28 @@ const OutgoingScreen = ({ navigation }) => {
 
 
     updateOutgoing = (accountId) => {
+        if (updatedOutgoing <= 0) {
+            Alert.alert('Alert', 'Amount need to be greater than 0');
+            return;
+        } else if (isNaN(updatedOutgoing)) {
+            Alert.alert('Alert', 'Amount needs to be a number');
+            return;
+        }
         firebase
-          .database()
-          .ref('outgoings /' + accountId)
-          .update({
-            outgoing: {
-                name: updatedOutgoingName,
-                amount: updatedOutgoing,
-                targetAccount: updatedTargetAccount,
-                frequency: updatedFrequency,
-                nextDate: updatedDate.getTime(),
-                uuid: auth().currentUser.uid,
-            },
-          });
+            .database()
+            .ref('outgoings /' + accountId)
+            .update({
+                outgoing: {
+                    name: updatedOutgoingName,
+                    amount: updatedOutgoing,
+                    targetAccount: updatedTargetAccount,
+                    frequency: updatedFrequency,
+                    nextDate: updatedDate.getTime(),
+                    uuid: auth().currentUser.uid,
+                },
+            });
         setModalVisible2(false)
-      }
+    }
 
 
     useEffect(() => {
@@ -300,9 +321,9 @@ const OutgoingScreen = ({ navigation }) => {
 
     const goToInOut = () => {
         navigation.replace('InOut')
-      }
-    
-    
+    }
+
+
 
     const goToAccounts = () => {
         navigation.replace('Accounts')
@@ -312,7 +333,7 @@ const OutgoingScreen = ({ navigation }) => {
         navigation.replace('DailySpending')
     }
     const goToMySpending = () => {
-        navigation.replace('Calendar')
+        navigation.replace('Analysis')
     }
 
 
@@ -353,6 +374,7 @@ const OutgoingScreen = ({ navigation }) => {
                                                     onChangeText={text => setUpdatedOutgoingName(text)}
                                                 />
                                                 <TextInput placeholder="Update Outgoing Amount"
+                                                    keyboardType='numeric'
                                                     value={updatedOutgoing}
                                                     onChangeText={text => setUpdatedOutgoing(text)}
                                                 />
@@ -398,9 +420,15 @@ const OutgoingScreen = ({ navigation }) => {
                                                     <Button rounded onPress={toggleModal2}>
                                                         <Text>Close</Text>
                                                     </Button>
-                                                    <Button rounded onPress={() => updateOutgoing(info.accountId)}  style={styles.addButtonModal}>
-                                                        <Text>Add Outgoing</Text>
-                                                    </Button>
+                                                    {!updatedOutgoing || !updatedOutgoingName ? (
+                                                        <Button rounded disabled style={styles.addButtonModal}>
+                                                            <Text>Update Outgoing</Text>
+                                                        </Button>
+                                                    ) : (
+                                                        <Button rounded onPress={() => updateOutgoing(info.accountId)} style={styles.addButtonModal}>
+                                                            <Text>Update Outgoing</Text>
+                                                        </Button>
+                                                    )}
                                                 </Body>
                                             </Body>
                                         </CardItem>
@@ -445,6 +473,7 @@ const OutgoingScreen = ({ navigation }) => {
                                         onChangeText={text => setOutgoingName(text)}
                                     />
                                     <TextInput placeholder="Enter Outgoing Amount"
+                                        keyboardType='numeric'
                                         onChangeText={text => setOutgoingAmount(text)}
                                     />
                                     <View style={{ marginLeft: -20, marginTop: 20 }}>
@@ -490,9 +519,15 @@ const OutgoingScreen = ({ navigation }) => {
                                         <Button rounded onPress={toggleModal}>
                                             <Text>Close</Text>
                                         </Button>
-                                        <Button rounded onPress={addOutgoing} style={styles.addButtonModal}>
-                                            <Text>Add Outgoing</Text>
-                                        </Button>
+                                        {!outgoingAmount || !outgoingName || !selectedAccount ? (
+                                            <Button rounded disabled style={styles.addButtonModal}>
+                                                <Text>Add Outgoing</Text>
+                                            </Button>
+                                        ) : (
+                                            <Button rounded onPress={addOutgoing} style={styles.addButtonModal}>
+                                                <Text>Add Outgoing</Text>
+                                            </Button>
+                                        )}
                                     </Body>
                                 </Body>
                             </CardItem>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
-import { Container, Header, Content, Footer, FooterTab, Button, Text, Icon, Card, CardItem, Title, Body, Subtitle } from 'native-base';
+import { Container, Header, Content, Footer, FooterTab, Button, Text, Icon, Card, CardItem, Title, Body, Subtitle, Right } from 'native-base';
 
 
 const styles = StyleSheet.create({
@@ -87,7 +87,7 @@ const HomeScreen = ({ navigation }) => {
     navigation.replace('DailySpending')
   }
   const goToMySpending = () => {
-    navigation.replace('Calendar')
+    navigation.replace('Analysis')
   }
 
 
@@ -157,6 +157,17 @@ const HomeScreen = ({ navigation }) => {
     });
   }, []);
 
+  function displayBalance(amount) {
+
+    if (amount < 0) {
+      return <Title style={{ color: 'red' }}>€{amount}</Title>
+    } else {
+      return <Title style={{ color: 'black' }}>€{amount}</Title>
+    }
+
+
+  }
+
 
   return (
     <Container>
@@ -164,7 +175,11 @@ const HomeScreen = ({ navigation }) => {
       {userDetail ? (
         <Container>
 
-          <Header />
+          <Header>
+          <Button onPress={logOut}>
+            <Icon name='log-in-outline' />
+          </Button>
+          </Header>
           <Content padder>
             <Card>
               <CardItem header>
@@ -173,13 +188,13 @@ const HomeScreen = ({ navigation }) => {
               <CardItem>
                 <Body>
                   <Text>
-                    Your total current balance:
+                    Your total current balance: 
                 </Text>
                 </Body>
               </CardItem>
               <CardItem>
                 <Body>
-                  <Title style={{ color: 'black' }}> € {totalBalance}</Title>
+                {displayBalance(totalBalance)}
                 </Body>
               </CardItem>
             </Card>
@@ -189,10 +204,6 @@ const HomeScreen = ({ navigation }) => {
               <Text >{info.accountId}</Text>
 
             ))}
-
-
-
-
 
           </Content>
 

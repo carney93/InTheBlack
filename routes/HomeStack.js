@@ -4,7 +4,7 @@ import LoginScreen from '../src/screens/LoginScreen';
 import RegisterScreen from '../src/screens/RegisterScreen';
 import HomeScreen from '../src/screens/HomeScreen';
 import AccountScreen from '../src/screens/AccountsScreen';
-import CalendarScreen from '../src/screens/CalendarScreen';
+import AnalysisScreen from '../src/screens/AnalysisScreen';
 import OnboardScreen from '../src/screens/OnboardScreen';
 import IncomeScreen from '../src/screens/IncomeScreen';
 import DailySpendingScreen from '../src/screens/DailySpendingScreen';
@@ -47,8 +47,8 @@ const screens = {
             headerShown: false
         },
     }, 
-    Calendar: {
-        screen: CalendarScreen,
+    Analysis: {
+        screen: AnalysisScreen,
         navigationOptions: {
             headerShown: false
         },

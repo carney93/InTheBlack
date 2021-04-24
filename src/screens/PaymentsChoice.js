@@ -117,7 +117,7 @@ const IncomeScreen = ({ navigation }) => {
         navigation.replace('DailySpending')
     }
     const goToMySpending = () => {
-        navigation.replace('Calendar')
+        navigation.replace('Analysis')
     }
 
 

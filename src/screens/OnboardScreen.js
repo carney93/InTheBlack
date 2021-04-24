@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, TextInput, ScrollView, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
 import { Container, Header, Subtitle, Left, Right, Title, Tab, Tabs, ScrollableTab, Icon, Button, Card, CardItem, Content, Text, Body, Footer, FooterTab } from 'native-base';
@@ -77,6 +77,10 @@ const OnboardScreen = ({ navigation }) => {
 
 
   addAccount = () => {
+    if(isNaN(account)){
+      Alert.alert('Alert', 'Amount needs to be a number');
+      return;
+      } 
     firebase
       .database()
       .ref('financialAccounts /')
@@ -99,11 +103,12 @@ const OnboardScreen = ({ navigation }) => {
       <Body style={styles.body}>
 
         <Text style={styles.text} >
-          Hello. Please enter your fianancial accounts details here. You can add more later
+          Hello. Please enter your fianancial account details here. You can add more later
           </Text>
 
 
-        <TextInput placeholder="Enter Accont Amount"
+        <TextInput placeholder="Enter Account Amount"
+         keyboardType='numeric'
           style={styles.emailInput}
           onChangeText={text => setAccount(text)}
         />
@@ -111,9 +116,16 @@ const OnboardScreen = ({ navigation }) => {
           style={styles.emailInput}
           onChangeText={text => setAccountName(text)}
         />
-        <Button style={styles.addAccountButton} rounded onPress={addAccount}>
-          <Text>Add Account</Text>
-        </Button>
+
+        {!accountName || !account  ? (
+          <Button rounded disabled style={styles.addAccountButton}>
+            <Text>Add Account</Text>
+          </Button>
+        ) : (
+          <Button rounded onPress={addAccount} style={styles.addAccountButton}>
+            <Text>Add Account</Text>
+          </Button>
+        )}
       </Body>
 
     </Container>

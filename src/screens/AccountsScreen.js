@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import { View, StyleSheet, TextInput, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
 import { Container, Header, Subtitle, Left, Right, Title, Tab, Tabs, ScrollableTab, Icon, Button, Card, CardItem, Content, Text, Body, Footer, FooterTab } from 'native-base';
@@ -116,6 +116,10 @@ const AccountsScreen = ({ navigation }) => {
 
 
   addAccount = () => {
+    if (isNaN(account)) {
+      Alert.alert('Alert', 'Amount needs to be a number');
+      return;
+    }
     firebase
       .database()
       .ref('financialAccounts /')
@@ -127,9 +131,15 @@ const AccountsScreen = ({ navigation }) => {
         },
       });
     setModalVisible(false)
+    setAccountName("")
+    setAccount("")
   }
 
   updateAccount = (accountId) => {
+    if (isNaN(updatedAccount)) {
+      Alert.alert('Alert', 'Amount needs to be a number');
+      return;
+    }
     firebase
       .database()
       .ref('financialAccounts /' + accountId)
@@ -240,7 +250,7 @@ const AccountsScreen = ({ navigation }) => {
     navigation.replace('DailySpending')
   }
   const goToMySpending = () => {
-    navigation.replace('Calendar')
+    navigation.replace('Analysis')
   }
 
   const [isModalVisible, setModalVisible] = useState(false);
@@ -279,7 +289,6 @@ const AccountsScreen = ({ navigation }) => {
       if (item.targetAccount === id) {
 
         const date = new Date(item.date)
-        console.log(date)
         return (
           <Card style={{ alignItems: 'center' }}>
             <CardItem style={{ borderRadius: 20 }}>
@@ -304,6 +313,20 @@ const AccountsScreen = ({ navigation }) => {
 
 
 
+
+  function displayBalance(amount) {
+
+    if (amount < 0) {
+      return <Title style={{ color: 'red' }}>€{amount}</Title>
+    } else {
+      return <Title style={{ color: 'black' }}>€{amount}</Title>
+    }
+
+
+  }
+
+
+
   return (
 
     <Container>
@@ -318,7 +341,7 @@ const AccountsScreen = ({ navigation }) => {
                 </CardItem>
                 <CardItem>
                   <Body style={styles.headerTitle}>
-                    <Title style={{ color: 'black' }}>€{info.amount}</Title>
+                    {displayBalance(info.amount)}
                   </Body>
                 </CardItem>
               </Card>
@@ -357,9 +380,17 @@ const AccountsScreen = ({ navigation }) => {
                           <Button rounded onPress={toggleModal2}>
                             <Text>Close</Text>
                           </Button>
-                          <Button rounded onPress={() => updateAccount(info.accountId)} style={styles.addButtonModal}>
-                            <Text>Update Account</Text>
-                          </Button>
+
+                          {!updatedAccount || !updatedAccountName ? (
+                            <Button rounded disabled style={styles.addButtonModal}>
+                              <Text>Update Account</Text>
+                            </Button>
+                          ) : (
+                            <Button rounded onPress={() => updateAccount(info.accountId)} style={styles.addButtonModal}>
+                              <Text>Update Account</Text>
+                            </Button>
+                          )}
+
                         </Body>
                       </Body>
                     </CardItem>
@@ -382,14 +413,24 @@ const AccountsScreen = ({ navigation }) => {
       </Tabs>
 
       {!userAccountInfo[0] ? (
-        <View style={styles.footer} >
+        <Body>
+          <Text>There are no accounts added. Please add one</Text>
+        </Body>
 
+      ) : (
+        <View  >
+        </View>
+      )}
+
+      {!userAccountInfo[0] ? (
+        <View style={styles.footer} >
           <Button transparent onPress={toggleModal} >
             <Icon style={styles.addButton} name='add-circle-outline' />
           </Button>
         </View>
+
       ) : (
-        <View style={styles.footer} >
+        <View  >
         </View>
       )}
 
@@ -401,19 +442,28 @@ const AccountsScreen = ({ navigation }) => {
               <Text style={styles.modalTitle}>Add New Account</Text>
               <CardItem>
                 <Body>
-                  <TextInput placeholder="Enter Amount in Account"
-                    onChangeText={text => setAccount(text)}
-                  />
-                  <TextInput placeholder="Enter Account name"
+                <TextInput placeholder="Enter Account name"
                     onChangeText={text => setAccountName(text)}
+                  />
+                  <TextInput placeholder="Enter Amount in Account"
+                    type="number"
+                    keyboardType='numeric'
+                    onChangeText={text => setAccount(text)}
                   />
                   <Body style={styles.modalButtons}>
                     <Button rounded onPress={toggleModal}>
                       <Text>Close</Text>
                     </Button>
-                    <Button rounded onPress={addAccount} style={styles.addButtonModal}>
-                      <Text>Add Account</Text>
-                    </Button>
+
+                    {!accountName || !account ? (
+                      <Button rounded disabled style={styles.addButtonModal}>
+                        <Text>Add Account</Text>
+                      </Button>
+                    ) : (
+                      <Button rounded onPress={addAccount} style={styles.addButtonModal}>
+                        <Text>Add Account</Text>
+                      </Button>
+                    )}
                   </Body>
                 </Body>
               </CardItem>
