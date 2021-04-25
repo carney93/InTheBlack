@@ -16,7 +16,7 @@ exports.updatingIncomes = functions.pubsub.schedule("0 0 * * *")
         var milliseconds = date.getTime();
 
 
-        if (child.val().income.firstDate < milliseconds) {
+        if (child.val().income.nextDate < milliseconds) {
 
           database
             .ref('financialAccounts /')
@@ -39,7 +39,7 @@ exports.updatingIncomes = functions.pubsub.schedule("0 0 * * *")
                   name: child.val().income.name,
                   amount: child.val().income.amount,
                   targetAccount: child.val().income.targetAccount,
-                  firstDate: updatedDate,
+                  nextDate: updatedDate,
                   frequency: child.val().income.frequency,
                   uuid: child.val().income.uuid,
                 },
@@ -57,7 +57,7 @@ exports.updatingIncomes = functions.pubsub.schedule("0 0 * * *")
                   name: child.val().income.name,
                   amount: child.val().income.amount,
                   targetAccount: child.val().income.targetAccount,
-                  firstDate: updatedDate,
+                  nextDate: updatedDate,
                   frequency: child.val().income.frequency,
                   uuid: child.val().income.uuid,
                 },
@@ -76,7 +76,7 @@ exports.updatingIncomes = functions.pubsub.schedule("0 0 * * *")
                   name: child.val().income.name,
                   amount: child.val().income.amount,
                   targetAccount: child.val().income.targetAccount,
-                  firstDate: updatedDate,
+                  nextDate: updatedDate,
                   frequency: child.val().income.frequency,
                   uuid: child.val().income.uuid,
                 },
@@ -101,7 +101,7 @@ exports.updatingOutgoings = functions.pubsub.schedule("0 0 * * *")
       var milliseconds = date.getTime();
 
 
-      if (child.val().outgoing.firstDate < milliseconds) {
+      if (child.val().outgoing.nextDate < milliseconds) {
 
         database
           .ref('financialAccounts /')
@@ -124,7 +124,7 @@ exports.updatingOutgoings = functions.pubsub.schedule("0 0 * * *")
                 name: child.val().outgoing.name,
                 amount: child.val().outgoing.amount,
                 targetAccount: child.val().outgoing.targetAccount,
-                firstDate: updatedDate,
+                nextDate: updatedDate,
                 frequency: child.val().outgoing.frequency,
                 uuid: child.val().outgoing.uuid,
               },
@@ -142,7 +142,7 @@ exports.updatingOutgoings = functions.pubsub.schedule("0 0 * * *")
                 name: child.val().outgoing.name,
                 amount: child.val().outgoing.amount,
                 targetAccount: child.val().outgoing.targetAccount,
-                firstDate: updatedDate,
+                nextDate: updatedDate,
                 frequency: child.val().outgoing.frequency,
                 uuid: child.val().outgoing.uuid,
               },
@@ -161,7 +161,7 @@ exports.updatingOutgoings = functions.pubsub.schedule("0 0 * * *")
                 name: child.val().outgoing.name,
                 amount: child.val().outgoing.amount,
                 targetAccount: child.val().outgoing.targetAccount,
-                firstDate: updatedDate,
+                nextDate: updatedDate,
                 frequency: child.val().outgoing.frequency,
                 uuid: child.val().outgoing.uuid,
               },

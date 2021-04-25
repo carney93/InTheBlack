@@ -137,7 +137,7 @@ const IncomeScreen = ({ navigation }) => {
     const [updatedIncomeName, setUpdatedIncomeName] = useState("");
     const [updatedTargetAccount, setUpdatedTargetAccount] = useState("");
     const [updatedFrequency, setUpdatedFrequency] = useState("");
-    const [updatedDate, setUpdatedDate] = useState(new Date(1598051730000));
+    const [updatedDate, setUpdatedDate] = useState(new Date());
 
 
 
@@ -196,7 +196,7 @@ const IncomeScreen = ({ navigation }) => {
                     name: incomeName,
                     amount: incomeAmount,
                     targetAccount: selectedAccount,
-                    firstDate: paymentDate.getTime(),
+                    nextDate: paymentDate.getTime() + 3600000,
                     frequency: selectedFrequency,
                     uuid: auth().currentUser.uid,
                 },
@@ -240,7 +240,7 @@ const IncomeScreen = ({ navigation }) => {
                         amount: child.val().income.amount,
                         targetAccount: child.val().income.targetAccount,
                         frequency: child.val().income.frequency,
-                        nextDate: child.val().income.firstDate,
+                        nextDate: child.val().income.nextDate,
                         accountId: child.key,
                     });
                 }
@@ -267,7 +267,7 @@ const IncomeScreen = ({ navigation }) => {
                     amount: updatedIncome,
                     targetAccount: updatedTargetAccount,
                     frequency: updatedFrequency,
-                    nextDate: updatedDate.getTime(),
+                    nextDate: updatedDate.getTime() + 3600000,
                     uuid: auth().currentUser.uid,
                 },
             });
@@ -326,7 +326,6 @@ const IncomeScreen = ({ navigation }) => {
 
     return (
         <Container>
-
             <Tabs renderTabBar={() => <ScrollableTab />}>
                 {incomeInfo.map(info => (
                     <Tab heading={info.name}>
@@ -336,16 +335,12 @@ const IncomeScreen = ({ navigation }) => {
                                     <Title style={{ color: 'black' }}>€{info.amount}</Title>
                                 </CardItem>
                             </Card>
-
-
-
                             <Body style={styles.mainContent}>
                                 <Button danger rounded style={styles.deleteButton} onPress={() => deleteIncome(info.accountId)}>
                                     <Text>Delete</Text>
                                 </Button>
                             </Body>
                         </Content>
-
                         <Modal isVisible={isModalVisible2} onBackdropPress={() => setModalVisible2(false)}>
                             <View style={{ flex: 1 }}>
                                 <Content>
@@ -404,14 +399,14 @@ const IncomeScreen = ({ navigation }) => {
                                                     <Button rounded onPress={toggleModal2}>
                                                         <Text>Close</Text>
                                                     </Button>
-                                                    {!updatedIncome || !updatedIncomeName ?  (
+                                                    {!updatedIncome || !updatedIncomeName ? (
                                                         <Button rounded disabled style={styles.addButtonModal}>
-                                                        <Text>Update Income</Text>
-                                                    </Button>
+                                                            <Text>Update Income</Text>
+                                                        </Button>
                                                     ) : (
                                                         <Button rounded onPress={() => updateIncome(info.accountId)} style={styles.addButtonModal}>
-                                                        <Text>Update Income</Text>
-                                                    </Button>
+                                                            <Text>Update Income</Text>
+                                                        </Button>
                                                     )}
                                                 </Body>
                                             </Body>
@@ -433,6 +428,17 @@ const IncomeScreen = ({ navigation }) => {
                     </Tab>
                 ))}
             </Tabs>
+
+
+{!incomeInfo[0] ? (
+                <Body style={{ textAlign: 'center', marginLeft: 10 }}>
+                    <Text style={{ color: 'grey' }}>You have no incomes set up. Please add one</Text>
+                </Body>
+
+            ) : (
+                <View  >
+                </View>
+            )}
 
             {!incomeInfo[0] ? (
                 <View style={styles.footer} >

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, Alert } from 'react-native';
 import { Container, Text, Item, Input, Button, Content } from 'native-base';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
@@ -67,6 +67,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     borderColor: "black"
   },
+  loginButtonDIS: {
+    marginTop: 20,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   registerButton: {
     height: 40,
     borderWidth: 2,
@@ -127,12 +134,18 @@ const RegisterScreen = ({ navigation }) => {
       })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
+          Alert.alert('Alert', 'That email address is already in use!');
         }
 
         if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
+          Alert.alert('Alert', 'That email address is invalid!');
         }
+
+        if (error.code === 'auth/weak-password') {
+          Alert.alert('Alert', 'Password must be longer than 5 characters!');
+        }
+
+
 
         console.error(error);
       });
@@ -161,9 +174,17 @@ const RegisterScreen = ({ navigation }) => {
 
       <Content>
 
-        <Button rounded style={styles.loginButton} onPress={createUser}>
+
+      {!password || !email ? (
+                  <Button disabled style={styles.loginButtonDIS}>
+                  <Text>Register</Text>
+                </Button>
+        ) : (
+          <Button rounded style={styles.loginButton} onPress={createUser}>
           <Text>Register</Text>
         </Button>
+        )}
+
       </Content>
 
 

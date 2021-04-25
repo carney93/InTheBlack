@@ -229,16 +229,14 @@ const AnalysisScreen = ({ navigation }) => {
   return (
     <Container>
 
-      <Header />
 
-      <View>
+<Header>
 
+</Header>
+      
         <Card>
           <CardItem>
             <Body>
-
-
-
               {!spentMore ? (
                 <Text>Spent {percentDifference}% more than last month</Text>
               ) : (
@@ -248,22 +246,22 @@ const AnalysisScreen = ({ navigation }) => {
           </CardItem>
         </Card>
 
+        {!dailySpending[0] ? (
+                <Body style={{ textAlign: 'center', marginTop: 150 }}>
+                    <Text style={{ color: 'grey' }}>You have made no purchases this month.</Text>
+                </Body>
 
-
-      </View>
-
-
+            ) : (
+                <View  >
+                </View>
+            )}
+      
       <ScrollView>
 
         {chart()}
-
-
-
         {chartInfo()}
 
       </ScrollView>
-
-
 
       <Footer>
         <FooterTab>

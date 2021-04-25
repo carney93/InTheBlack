@@ -4,6 +4,7 @@ import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
 import { Container, Header, Subtitle, Left, Right, Title, Tab, Tabs, ScrollableTab, Icon, Button, Card, CardItem, Content, Text, Body, Footer, FooterTab } from 'native-base';
 import Modal from 'react-native-modal';
+import { color } from 'react-native-reanimated';
 
 
 
@@ -72,6 +73,9 @@ const AccountsScreen = ({ navigation }) => {
   const [incomeInfo, setIncomeInfo] = useState([
   ]);
 
+  const [outgoingInfo, setOutgoingInfo] = useState([
+  ]);
+
   const [dailySpending, setDailySpending] = useState([
   ]);
 
@@ -93,6 +97,13 @@ const AccountsScreen = ({ navigation }) => {
       if (accountId === incomeInfo[i].targetAccount) {
         var incomeRecord = firebase.database().ref('incomes /' + incomeInfo[i].accountId);
         incomeRecord.remove();
+      }
+    }
+
+    for (let i = 0; i < outgoingInfo.length; i++) {
+      if (accountId === outgoingInfo[i].targetAccount) {
+        var outgoingRecord = firebase.database().ref('outgoings /' + outgoingInfo[i].accountId);
+        outgoingRecord.remove();
       }
     }
 
@@ -168,6 +179,22 @@ const AccountsScreen = ({ navigation }) => {
       setIncomeInfo(items);
     });
   }, []);
+
+    //getting outgoings so they can be removed if the bank account they are targeting is deleted
+    useEffect(() => {
+      firebase.database().ref('outgoings /').on('value', (dataSnapshot) => {
+        let items = [];
+        dataSnapshot.forEach((child) => {
+          if (id === child.val().outgoing.uuid) {
+            items.push({
+              targetAccount: child.val().outgoing.targetAccount,
+              accountId: child.key,
+            });
+          }
+        });
+        setOutgoingInfo(items);
+      });
+    }, []);
 
   //getting spendings so they can be removed if the bank account they are targeting is deleted
   useEffect(() => {
@@ -279,16 +306,11 @@ const AccountsScreen = ({ navigation }) => {
 
   function displayTransactions(id) {
 
-
-
-
     let chartInfo = dailySpending.map((item) => {
-
-
-
+ 
       if (item.targetAccount === id) {
 
-        const date = new Date(item.date)
+        const date = new Date(item.date + 3600000);
         return (
           <Card style={{ alignItems: 'center' }}>
             <CardItem style={{ borderRadius: 20 }}>
@@ -339,25 +361,25 @@ const AccountsScreen = ({ navigation }) => {
                 <CardItem headers style={styles.headerTitle}>
                   <Title style={{ color: 'black' }}>{info.name} Balance</Title>
                 </CardItem>
-                <CardItem>
-                  <Body style={styles.headerTitle}>
+                <CardItem style={styles.headerTitle}>            
                     {displayBalance(info.amount)}
-                  </Body>
                 </CardItem>
               </Card>
 
-              <Content>
-                <Title style={{ color: 'black' }}>Transactions</Title>
-
-                {displayTransactions(info.accountId)}
-
-              </Content>
               <Body style={styles.mainContent}>
                 <Button danger rounded style={styles.deleteButton} onPress={() => deleteAccount(info.accountId)}>
                   <Text>Delete Account</Text>
                 </Button>
               </Body>
             </Content>
+
+
+            <Content >
+                <Title style={{ color: 'grey', marginLeft: 5, marginTop: 5  }}>Transactions</Title>
+
+                {displayTransactions(info.accountId)}
+
+              </Content>
 
 
 
@@ -413,8 +435,8 @@ const AccountsScreen = ({ navigation }) => {
       </Tabs>
 
       {!userAccountInfo[0] ? (
-        <Body>
-          <Text>There are no accounts added. Please add one</Text>
+        <Body style={{ textAlign: 'center', marginLeft: 10}}>
+          <Text style={{color: 'grey'}}>There are no accounts added. Please add one</Text>
         </Body>
 
       ) : (

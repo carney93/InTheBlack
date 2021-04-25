@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
-import { Container, Header, Content, Footer, FooterTab, Button, Text, Icon, Card, CardItem, Title, Body, Subtitle, Right } from 'native-base';
+import { Container, Header, Content, Footer, FooterTab, Button, Text, Icon, Card, CardItem, Title, Body, Subtitle, List, ListItem } from 'native-base';
 
+
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Warning: ...'])
+LogBox.ignoreAllLogs();
 
 const styles = StyleSheet.create({
   container: {
@@ -73,6 +77,9 @@ const HomeScreen = ({ navigation }) => {
   const [incomeInfo, setIncomeInfo] = useState([
   ]);
 
+  const [outgoingInfo, setOutgoingInfo] = useState([
+  ]);
+
 
   const goToAccounts = () => {
     navigation.replace('Accounts')
@@ -133,12 +140,13 @@ const HomeScreen = ({ navigation }) => {
             amount: child.val().income.amount,
             targetAccount: child.val().income.targetAccount,
             frequency: child.val().income.frequency,
-            nextDate: child.val().income.firstDate,
+            nextDate: child.val().income.nextDate,
             accountId: child.key,
           });
         }
       });
       setIncomeInfo(items);
+
     });
   }, []);
 
@@ -146,7 +154,7 @@ const HomeScreen = ({ navigation }) => {
     firebase.database().ref('users /').on('value', (dataSnapshot) => {
       dataSnapshot.forEach((child) => {
         if (id === child.val().user.uuid) {
-          setUserDetail({ 
+          setUserDetail({
             id,
             name: child.val().user.name,
             email: child.val().user.email,
@@ -160,7 +168,7 @@ const HomeScreen = ({ navigation }) => {
   function displayBalance(amount) {
 
     if (amount < 0) {
-      return <Title style={{ color: 'red' }}>€{amount}</Title>
+      return <Title style={{ color: '#f52500' }}>€{amount}</Title>
     } else {
       return <Title style={{ color: 'black' }}>€{amount}</Title>
     }
@@ -168,6 +176,39 @@ const HomeScreen = ({ navigation }) => {
 
   }
 
+  function displayDate(date) {
+
+ 
+
+    const newDate = new Date(date)
+    let dateString = newDate.toUTCString()
+    dateString = dateString.split(' ').slice(0, 4).join(' ');
+
+    return (
+      dateString
+    )
+
+  }
+
+  //getting outgoings
+  useEffect(() => {
+    firebase.database().ref('outgoings /').on('value', (dataSnapshot) => {
+      let items = [];
+      dataSnapshot.forEach((child) => {
+        if (id === child.val().outgoing.uuid) {
+          items.push({
+            name: child.val().outgoing.name,
+            amount: child.val().outgoing.amount,
+            targetAccount: child.val().outgoing.targetAccount,
+            frequency: child.val().outgoing.frequency,
+            nextDate: child.val().outgoing.nextDate,
+            accountId: child.key,
+          });
+        }
+      });
+      setOutgoingInfo(items);
+    });
+  }, []);
 
   return (
     <Container>
@@ -175,10 +216,10 @@ const HomeScreen = ({ navigation }) => {
       {userDetail ? (
         <Container>
 
-          <Header>
-          <Button onPress={logOut}>
-            <Icon name='log-in-outline' />
-          </Button>
+          <Header style={{ color: 'black', marginLeft: -250 }}>
+            <Button transparent onPress={logOut}>
+              <Icon name='log-in-outline' />
+            </Button>
           </Header>
           <Content padder>
             <Card>
@@ -188,27 +229,79 @@ const HomeScreen = ({ navigation }) => {
               <CardItem>
                 <Body>
                   <Text>
-                    Your total current balance: 
+                    Your total current balance:
                 </Text>
                 </Body>
               </CardItem>
               <CardItem>
                 <Body>
-                {displayBalance(totalBalance)}
+                  {displayBalance(totalBalance)}
                 </Body>
               </CardItem>
             </Card>
 
-            <Subtitle style={{ color: 'black' }}> Upcoming Incomes</Subtitle>
-            {incomeInfo.map(info => (
-              <Text >{info.accountId}</Text>
 
-            ))}
+            {!incomeInfo[0] ? (
+              <Body style={{ textAlign: 'center', marginTop: 50 }}>
+                <Text style={{ color: 'grey' }}>You have no upcoming Incomes</Text>
+              </Body>
+
+            ) : (
+              <View>
+                <Subtitle style={{ color: 'gray', marginTop: 10 }}> Upcoming Incomes</Subtitle>
+                <List horizontal={true} dataArray={incomeInfo}
+                  renderRow={info => (
+                    <ListItem  >
+                      <Card>
+                        <CardItem header>
+                          <Title style={{ color: 'black' }}> {info.name} : €{info.amount}  </Title>
+                        </CardItem>
+                        <CardItem>
+                          <Body>
+                            <Text>Due: {displayDate(info.nextDate)} </Text>
+                          </Body>
+                        </CardItem>
+                      </Card>
+
+                    </ListItem>
+                  )}>
+                </List>
+              </View>
+            )}
+
+
+            {!outgoingInfo[0] ? (
+              <Body style={{ textAlign: 'center', marginTop: 50 }}>
+                <Text style={{ color: 'grey' }}>You have no upcoming Outgoings</Text>
+              </Body>
+
+            ) : (
+              <View>
+                <Subtitle style={{ color: 'gray', marginTop: 10 }}> Upcoming Outgoings</Subtitle>
+                <List horizontal={true} dataArray={outgoingInfo} // your array should go here
+                  renderRow={info => (
+                    <ListItem>
+                      <Card>
+                        <CardItem header>
+                          <Title style={{ color: 'black' }}> {info.name} : €{info.amount}  </Title>
+                        </CardItem>
+                        <CardItem>
+                          <Body>
+                            <Text>Due: {displayDate(info.nextDate)} </Text>
+                          </Body>
+                        </CardItem>
+                      </Card>
+
+                    </ListItem>
+                  )}>
+                </List>
+              </View>
+            )}
+
 
           </Content>
 
 
-          <Content />
           <Footer>
             <FooterTab>
               <Button active>

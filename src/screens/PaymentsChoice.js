@@ -147,12 +147,12 @@ const IncomeScreen = ({ navigation }) => {
                 <TouchableOpacity onPress={goToOutcomes}>
                 <Card>
                     <CardItem header >
-                    <Title style={{ color: 'black'}}> Outcomes </Title>
+                    <Title style={{ color: 'black'}}> Outgoings </Title>
                     </CardItem>
                     <CardItem>
                         <Body>
                             <Text>
-                                Manage your Outcomes
+                                Manage your Outgoings
                 </Text>
                         </Body>
                     </CardItem>

@@ -67,6 +67,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     borderColor: "black"
   },
+
+  loginButtonDIS: {
+    marginTop: 20,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   registerButton: {
     height: 40,
     borderWidth: 2,
@@ -97,7 +105,7 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const login = () => {
-    console.log(email)
+
     auth()
       .signInWithEmailAndPassword(email, password)
       .then((res) => {
@@ -118,20 +126,27 @@ const LoginScreen = ({ navigation }) => {
 
 
       <Item style={styles.input}>
-        <Input style={styles.inputText} placeholder='Email' 
-        onChangeText={text => setEmail(text)} />
+        <Input style={styles.inputText} placeholder='Email'
+          onChangeText={text => setEmail(text)} />
       </Item>
 
       <Item style={styles.input}>
         <Input style={styles.inputText} placeholder='Password'
-        onChangeText={text => setPassword(text)} />
+          onChangeText={text => setPassword(text)} />
       </Item>
 
       <Content>
 
-        <Button rounded style={styles.loginButton} onPress={login}>
+        {!password || !email ? (
+              <Button  disabled style={styles.loginButtonDIS}>
+              <Text>Login</Text>
+            </Button>
+        ) : (
+          <Button rounded style={styles.loginButton} onPress={login}>
           <Text>Login</Text>
         </Button>
+        )}
+
       </Content>
 
       <LoginApp />

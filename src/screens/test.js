@@ -133,7 +133,6 @@ const IncomeScreen = ({ navigation }) => {
 
 
     addIncome = () => {
-        console.log(paymentDate)
         firebase
             .database()
             .ref('incomes /')
@@ -142,7 +141,7 @@ const IncomeScreen = ({ navigation }) => {
                     name: incomeName,
                     amount: incomeAmount,
                     targetAccount: selectedAccount,
-                    firstDate: paymentDate.getTime(),
+                    nextDate: paymentDate.getTime(),
                     frequency: selectedFrequency,
                     uuid: auth().currentUser.uid,
                 },

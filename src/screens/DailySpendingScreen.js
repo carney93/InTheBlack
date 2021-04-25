@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, StyleSheet, TextInput, Alert, ScrollView} from 'react-native';
+import { View, Image, StyleSheet, TextInput, Alert, ScrollView } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firebase from '../../config';
 import CalendarStrip from 'react-native-calendar-strip';
@@ -217,50 +217,52 @@ const DailySpendingScreen = ({ navigation }) => {
   useEffect(() => {
     let total = 0;
     for (let i = 0; i < displaySpending.length; i++) {
-    total =  parseFloat(displaySpending[i].amount) + parseFloat(total);
+      total = parseFloat(displaySpending[i].amount) + parseFloat(total);
     }
-    console.log(total)
     setDayTotal(total)
   }, [displaySpending]);
 
   return (
     <Container>
       <ScrollView>
-      <CalendarStrip
-        style={{ height: 150, paddingTop: 20, paddingBottom: 50 }}
-        selection={'border'}
-        selectionAnimation={{ duration: 300, borderWidth: 1 }}
-        highlightDateNumberStyle={{ color: 'grey' }}
-        highlightDateNameStyle={{ color: 'grey' }}
-        dateNumberStyle={{ color: 'black' }}
-        dateNameStyle={{ color: 'black' }}
-        startingDate={todaysDate}
-        selectedDate={todaysDate}
-        onDateSelected={(itemValue) => convertDate(itemValue)}
-      />
+        <CalendarStrip
+          style={{ height: 150, paddingTop: 20, paddingBottom: 50 }}
+          selection={'border'}
+          selectionAnimation={{ duration: 300, borderWidth: 1 }}
+          highlightDateNumberStyle={{ color: 'grey' }}
+          highlightDateNameStyle={{ color: 'grey' }}
+          dateNumberStyle={{ color: 'black' }}
+          dateNameStyle={{ color: 'black' }}
+          startingDate={todaysDate}
+          selectedDate={todaysDate}
+          onDateSelected={(itemValue) => convertDate(itemValue)}
+        />
 
-      <Body>
-        <Button rounded onPress={toggleModal}>
-          <Text>Add Purchase</Text>
-        </Button>
+        <Body>
+          <Button rounded onPress={toggleModal}>
+            <Text>Add Purchase</Text>
+          </Button>
 
-        <List>
-          <ListItem itemHeader first style={{ justifyContent: 'center' }}>
-            <Text>Daily Spendings
+          <List>
+            <ListItem itemHeader first style={{ justifyContent: 'center' }}>
+              <Text>Daily Spendings
             </Text>
-          </ListItem>
-          <ListItem itemHeader first style={{ justifyContent: 'center', marginTop: -45 }}>
-            <Text>€{dayTotal}
-            </Text>
-          </ListItem>
-          {displaySpending.map(info => (
-            <ListItem key={info.spendingId} style={{ justifyContent: 'center' }}>
-              <Text>{info.name} : €{info.amount}</Text>
             </ListItem>
-          ))}
-       
-        </List>
-      </Body>
+            <ListItem itemHeader first style={{ justifyContent: 'center', marginTop: -45 }}>
+              <Text>€{dayTotal}
+              </Text>
+            </ListItem>
+            {displaySpending.map(info => (
+              <ListItem key={info.spendingId} style={{ justifyContent: 'center' }}>
+                <Text >{info.name} : €{info.amount}</Text>
+                <Button transparent style={styles.deleteButton} onPress={() => deleteSpending(info.spendingId)}>
+                  <Icon name='trash-bin' />
+                </Button>
+              </ListItem>
+            ))}
+
+          </List>
+        </Body>
       </ScrollView>
 
       <Modal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}>
@@ -283,7 +285,7 @@ const DailySpendingScreen = ({ navigation }) => {
                     onValueChange={(itemValue) => setSelectedAccount(itemValue)}
                   >
                     {accountInfo.map(info => (
-                      <Picker.Item label={info.name} value={info.accountId} />
+                      <Picker.Item key={info.accountId} label={info.name} value={info.accountId} />
                     ))}
                   </Picker>
                   <Picker

@@ -95,7 +95,7 @@ const OnboardScreen = ({ navigation }) => {
                     name: outgoingName,
                     amount: outgoingAmount,
                     targetAccount: selectedAccount,
-                    firstDate: paymentDate.getTime(),
+                    nextDate: paymentDate.getTime(),
                     frequency: selectedFrequency,
                     uuid: auth().currentUser.uid,
                 },

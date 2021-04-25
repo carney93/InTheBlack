@@ -141,7 +141,7 @@ const OutgoingScreen = ({ navigation }) => {
     const [updatedOutgoingName, setUpdatedOutgoingName] = useState("");
     const [updatedTargetAccount, setUpdatedTargetAccount] = useState("");
     const [updatedFrequency, setUpdatedFrequency] = useState("");
-    const [updatedDate, setUpdatedDate] = useState(new Date(1598051730000));
+    const [updatedDate, setUpdatedDate] = useState(new Date());
 
 
 
@@ -200,7 +200,7 @@ const OutgoingScreen = ({ navigation }) => {
                     name: outgoingName,
                     amount: outgoingAmount,
                     targetAccount: selectedAccount,
-                    firstDate: paymentDate.getTime(),
+                    nextDate: paymentDate.getTime() + 3600000,
                     frequency: selectedFrequency,
                     uuid: auth().currentUser.uid,
                 },
@@ -271,7 +271,7 @@ const OutgoingScreen = ({ navigation }) => {
                     amount: updatedOutgoing,
                     targetAccount: updatedTargetAccount,
                     frequency: updatedFrequency,
-                    nextDate: updatedDate.getTime(),
+                    nextDate: updatedDate.getTime() + 3600000,
                     uuid: auth().currentUser.uid,
                 },
             });
@@ -449,6 +449,16 @@ const OutgoingScreen = ({ navigation }) => {
                     </Tab>
                 ))}
             </Tabs>
+
+            {!outgoingInfo[0] ? (
+                <Body style={{ textAlign: 'center', marginLeft: 10 }}>
+                    <Text style={{ color: 'grey' }}>You have no outgoings set up. Please add one</Text>
+                </Body>
+
+            ) : (
+                <View  >
+                </View>
+            )}
 
             {!outgoingInfo[0] ? (
                 <View style={styles.footer} >
