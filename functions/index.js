@@ -24,7 +24,7 @@ exports.updatingIncomes = functions.pubsub.schedule("0 0 * * *")
             .child('financialAccount')
             .child('amount')
             .transaction(function (amount) {
-              return (amount || 0) + child.val().income.amount
+              return (parseFloat(amount)) + parseFloat(child.val().income.amount)
             })
 
           if (child.val().income.frequency === "Every Week") {
