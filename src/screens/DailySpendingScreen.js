@@ -255,7 +255,7 @@ const DailySpendingScreen = ({ navigation }) => {
             {displaySpending.map(info => (
               <ListItem key={info.spendingId} style={{ justifyContent: 'center' }}>
                 <Text >{info.name} : €{info.amount}</Text>
-                <Button transparent style={styles.deleteButton} onPress={() => deleteSpending(info.spendingId)}>
+                <Button transparent style={styles.deleteButton} onPress={() => deleteSpending(info.spendingId, info.targetAccount, info.amount)}>
                   <Icon name='trash-bin' />
                 </Button>
               </ListItem>
