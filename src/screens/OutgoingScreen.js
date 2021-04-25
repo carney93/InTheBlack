@@ -172,7 +172,7 @@ const OutgoingScreen = ({ navigation }) => {
         setModalVisible2(!isModalVisible2);
     };
 
-    updateAccountModal = (name, amount, targetAccount, frequency, nextDate) => {
+    updateAccountModal = (name, amount, targetAccount, frequency) => {
         setUpdatedOutgoing(amount);
         setUpdatedOutgoingName(name);
         setUpdatedTargetAccount(targetAccount);
@@ -244,7 +244,7 @@ const OutgoingScreen = ({ navigation }) => {
                         amount: child.val().outgoing.amount,
                         targetAccount: child.val().outgoing.targetAccount,
                         frequency: child.val().outgoing.frequency,
-                        nextDate: child.val().outgoing.firstDate,
+                        nextDate: child.val().outgoing.nextDate,
                         accountId: child.key,
                     });
                 }
@@ -337,7 +337,14 @@ const OutgoingScreen = ({ navigation }) => {
     }
 
 
-
+    function displayDate(date) {
+        const newDate = new Date(date)
+        let dateString = newDate.toUTCString()
+        dateString = dateString.split(' ').slice(0, 4).join(' ');
+        return (
+          dateString
+        )
+      }
 
 
     return (
@@ -348,8 +355,14 @@ const OutgoingScreen = ({ navigation }) => {
                     <Tab heading={info.name}>
                         <Content >
                             <Card style={styles.headerTitle}>
+                            <CardItem headers style={styles.headerTitle}>
+                                <Title style={{ color: 'black' }}>{info.name}</Title>
+                                </CardItem>
                                 <CardItem headers style={styles.headerTitle}>
-                                    <Title style={{ color: 'black' }}>€{info.amount}</Title>
+                                    <Title style={{ color: 'black' }}>€{info.amount} {info.frequency}</Title>
+                                </CardItem>
+                                <CardItem headers style={styles.headerTitle}>
+                                    <Title style={{ color: 'black' }}> This is due on {displayDate(info.nextDate)}</Title>
                                 </CardItem>
                             </Card>
 

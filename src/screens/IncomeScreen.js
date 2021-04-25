@@ -321,6 +321,18 @@ const IncomeScreen = ({ navigation }) => {
     }
 
 
+    function displayDate(date) {
+
+ 
+
+        const newDate = new Date(date)
+        let dateString = newDate.toUTCString()
+        dateString = dateString.split(' ').slice(0, 4).join(' ');
+    
+        return (
+          dateString
+        )
+      }
 
 
 
@@ -332,8 +344,15 @@ const IncomeScreen = ({ navigation }) => {
                         <Content >
                             <Card style={styles.headerTitle}>
                                 <CardItem headers style={styles.headerTitle}>
-                                    <Title style={{ color: 'black' }}>€{info.amount}</Title>
+                                <Title style={{ color: 'black' }}>{info.name}</Title>
                                 </CardItem>
+                                <CardItem headers style={styles.headerTitle}>
+                                    <Title style={{ color: 'black' }}>€{info.amount} {info.frequency}</Title>
+                                </CardItem>
+                                <CardItem headers style={styles.headerTitle}>
+                                    <Title style={{ color: 'black' }}> This is due on {displayDate(info.nextDate)}</Title>
+                                </CardItem>
+                                
                             </Card>
                             <Body style={styles.mainContent}>
                                 <Button danger rounded style={styles.deleteButton} onPress={() => deleteIncome(info.accountId)}>
